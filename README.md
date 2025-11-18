@@ -1,20 +1,11 @@
-# `@napi-rs/package-template`
+# `@cnpmjs/packument`
 
-![https://github.com/napi-rs/package-template/actions](https://github.com/napi-rs/package-template/workflows/CI/badge.svg)
+![https://github.com/cnpm/packument/actions](https://github.com/cnpm/packument/workflows/CI/badge.svg)
 
-> Template project for writing node packages with napi-rs.
-
-# Usage
-
-1. Click **Use this template**.
-2. **Clone** your project.
-3. Run `yarn install` to install dependencies.
-4. Run `yarn napi rename -n [@your-scope/package-name] -b [binary-name]` command under the project folder to rename your package.
-
-## Install this test package
+## Install
 
 ```bash
-yarn add @napi-rs/package-template
+yarn add @cnpmjs/packument
 ```
 
 ## Ability
@@ -85,3 +76,13 @@ git push
 GitHub actions will do the rest job for you.
 
 > WARN: Don't run `npm publish` manually.
+
+## License
+
+[MIT](LICENSE)
+
+## Contributors
+
+[![Contributors](https://contrib.rocks/image?repo=cnpm/packument)](https://github.com/cnpm/packument/graphs/contributors)
+
+Made with [contributors-img](https://contrib.rocks).

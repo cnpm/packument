@@ -1,7 +1,7 @@
 {
   "name": "@cnpmjs/packument",
   "version": "0.0.0",
-  "description": "Template project for writing node package with napi-rs",
+  "description": "Packument helper",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,7 +15,8 @@
     "N-API",
     "Rust",
     "node-addon",
-    "node-addon-api"
+    "node-addon-api",
+    "packument"
   ],
   "files": [
     "index.d.ts",
