@@ -19,19 +19,19 @@ function SimdJSONParse(data: Buffer) {
 
 const b = new Bench();
 
-b.add('JSONParse small data', () => {
+b.add('JSONParse small data (117KB)', () => {
   JSONParse(smallData);
 });
 
-b.add('SimdJSONParse small data', () => {
+b.add('SimdJSONParse small data (117KB)', () => {
   SimdJSONParse(smallData);
 });
 
-b.add('JSONParse large data', () => {
+b.add('JSONParse large data (22MB)', () => {
   JSONParse(largeData);
 });
 
-b.add('SimdJSONParse large data', () => {
+b.add('SimdJSONParse large data (22MB)', () => {
   SimdJSONParse(largeData);
 });
 
