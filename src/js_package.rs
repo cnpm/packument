@@ -27,44 +27,47 @@ use crate::package::Package;
 
 #[napi(js_name = "Package")]
 pub struct JsPackage {
-  package: Package,
+    package: Package,
 }
 
 #[napi]
 impl JsPackage {
-  #[napi(constructor)]
-  pub fn new(data: Buffer) -> Self {
-    let data = data.into();
-    JsPackage { package: Package::from_data(data).unwrap() }
-  }
- 
-  #[napi(getter)]
-  pub fn name(&self) -> String {
-    self.package.name().to_string()
-  }
-
-  #[napi(getter)]
-  pub fn description(&self) -> Option<String> {
-    self.package.description().map(|s| s.to_string())
-  }
-
-  #[napi(getter)]
-  pub fn readme(&self) -> Option<String> {
-    self.package.readme().map(|s| s.to_string())
-  }
-
-  #[napi(getter)]
-  pub fn time(&self) -> HashMap<String, String> {
-    let time = self.package.time();
-    let mut out = HashMap::default();
-    for (key, value) in time.iter() {
-      out.insert(key.to_string(), value.to_string());
+    #[napi(constructor)]
+    pub fn new(data: Buffer) -> Result<Self> {
+        let data = data.into();
+        Ok(JsPackage {
+            package: Package::from_data(data)
+                .map_err(|e| napi::Error::new(napi::Status::InvalidArg, e.to_string()))?,
+        })
     }
-    out
-  }
 
-  #[napi(getter)]
-  pub fn is_unpublished(&self) -> bool {
-    self.package.is_unpublished()
-  }
+    #[napi(getter)]
+    pub fn name(&self) -> String {
+        self.package.name().to_string()
+    }
+
+    #[napi(getter)]
+    pub fn description(&self) -> Option<String> {
+        self.package.description().map(|s| s.to_string())
+    }
+
+    #[napi(getter)]
+    pub fn readme(&self) -> Option<String> {
+        self.package.readme().map(|s| s.to_string())
+    }
+
+    #[napi(getter)]
+    pub fn time(&self) -> HashMap<String, String> {
+        let time = self.package.time();
+        let mut out = HashMap::default();
+        for (key, value) in time.iter() {
+            out.insert(key.to_string(), value.to_string());
+        }
+        out
+    }
+
+    #[napi(getter)]
+    pub fn is_unpublished(&self) -> bool {
+        self.package.is_unpublished()
+    }
 }

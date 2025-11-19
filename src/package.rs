@@ -1,11 +1,11 @@
 #![expect(clippy::impl_trait_in_params)] // from self_cell
 
 use rustc_hash::FxHashMap;
-use self_cell::{MutBorrow, self_cell};
+use self_cell::{self_cell, MutBorrow};
 use simd_json::{
-    BorrowedValue,
     base::{ValueAsObject, ValueAsScalar},
     borrowed::Object,
+    BorrowedValue,
 };
 
 self_cell!(
@@ -27,19 +27,31 @@ impl Package {
     }
 
     pub fn name(&self) -> &str {
-        self.borrow_dependent().as_object().unwrap()["name"].as_str().unwrap()
+        self.borrow_dependent().as_object().unwrap()["name"]
+            .as_str()
+            .unwrap()
     }
 
     pub fn description(&self) -> Option<&str> {
-        self.borrow_dependent().as_object().unwrap().get("description").and_then(|v| v.as_str())
+        self.borrow_dependent()
+            .as_object()
+            .unwrap()
+            .get("description")
+            .and_then(|v| v.as_str())
     }
 
     pub fn readme(&self) -> Option<&str> {
-        self.borrow_dependent().as_object().unwrap().get("readme").and_then(|v| v.as_str())
+        self.borrow_dependent()
+            .as_object()
+            .unwrap()
+            .get("readme")
+            .and_then(|v| v.as_str())
     }
 
     pub fn time(&self) -> FxHashMap<&str, &str> {
-        let time = self.borrow_dependent().as_object().unwrap()["time"].as_object().unwrap();
+        let time = self.borrow_dependent().as_object().unwrap()["time"]
+            .as_object()
+            .unwrap();
         let mut out = FxHashMap::default();
         for (key, value) in time.iter() {
             out.insert(key.as_ref(), value.as_str().unwrap());
@@ -49,18 +61,29 @@ impl Package {
 
     pub fn is_unpublished(&self) -> bool {
         // time.unpublished
-        self.borrow_dependent().as_object().unwrap().get("time").and_then(|v| v.as_object()).and_then(|v| v.get("unpublished").and_then(|v| v.as_str())).is_some()
+        self.borrow_dependent()
+            .as_object()
+            .unwrap()
+            .get("time")
+            .and_then(|v| v.as_object())
+            .and_then(|v| v.get("unpublished").and_then(|v| v.as_str()))
+            .is_some()
     }
 
     pub fn modified(&self) -> &str {
         // time.modified
-        self.borrow_dependent().as_object().unwrap()["time"].as_object().unwrap()["modified"].as_str().unwrap()
+        self.borrow_dependent().as_object().unwrap()["time"]
+            .as_object()
+            .unwrap()["modified"]
+            .as_str()
+            .unwrap()
     }
 
     /// Get distribution tags
     pub fn dist_tags(&self) -> FxHashMap<&str, &str> {
-        let dist_tags =
-            self.borrow_dependent().as_object().unwrap()["dist-tags"].as_object().unwrap();
+        let dist_tags = self.borrow_dependent().as_object().unwrap()["dist-tags"]
+            .as_object()
+            .unwrap();
         let mut out = FxHashMap::default();
         for (tag, v) in dist_tags.iter() {
             out.insert(tag.as_ref(), v.as_str().unwrap());
@@ -70,8 +93,9 @@ impl Package {
 
     /// Get all versions as a map of version string to PackageVersion
     pub fn versions(&self) -> FxHashMap<&str, PackageVersion<'_>> {
-        let versions =
-            self.borrow_dependent().as_object().unwrap()["versions"].as_object().unwrap();
+        let versions = self.borrow_dependent().as_object().unwrap()["versions"]
+            .as_object()
+            .unwrap();
         let mut out = FxHashMap::default();
         for (version, version_obj) in versions.iter() {
             let version_obj = version_obj.as_object().unwrap();
@@ -82,9 +106,13 @@ impl Package {
 
     /// Get a specific version by version string
     pub fn get_version(&self, version: &str) -> Option<PackageVersion<'_>> {
-        let versions =
-            self.borrow_dependent().as_object().unwrap()["versions"].as_object().unwrap();
-        versions.get(version).and_then(|v| v.as_object()).map(|obj| PackageVersion { obj })
+        let versions = self.borrow_dependent().as_object().unwrap()["versions"]
+            .as_object()
+            .unwrap();
+        versions
+            .get(version)
+            .and_then(|v| v.as_object())
+            .map(|obj| PackageVersion { obj })
     }
 }
 
@@ -214,7 +242,10 @@ mod tests {
         assert_eq!(package.name(), "leftpad");
         assert_eq!(package.description(), None);
         assert_eq!(package.readme(), None);
-        assert_eq!(package.time().get("modified"), Some(&"2024-11-12T08:15:30.000Z"));
+        assert_eq!(
+            package.time().get("modified"),
+            Some(&"2024-11-12T08:15:30.000Z")
+        );
         assert!(!package.is_unpublished());
 
         // Test dist-tags
@@ -238,7 +269,10 @@ mod tests {
 
         // Test dist
         let dist = v1.dist();
-        assert_eq!(dist.tarball(), "https://registry.npmjs.org/leftpad/-/leftpad-1.3.0.tgz");
+        assert_eq!(
+            dist.tarball(),
+            "https://registry.npmjs.org/leftpad/-/leftpad-1.3.0.tgz"
+        );
         assert_eq!(dist.shasum(), "abc123");
         assert!(dist.integrity().is_none());
         assert!(dist.file_count().is_none());
@@ -259,7 +293,10 @@ mod tests {
 
         // Test dist
         let dist = v2.dist();
-        assert_eq!(dist.tarball(), "https://registry.npmjs.org/leftpad/-/leftpad-2.0.0-beta.1.tgz");
+        assert_eq!(
+            dist.tarball(),
+            "https://registry.npmjs.org/leftpad/-/leftpad-2.0.0-beta.1.tgz"
+        );
         assert_eq!(dist.shasum(), "def456");
         assert_eq!(dist.integrity(), Some("sha512-1234567890"));
         assert_eq!(dist.file_count(), Some(100));

@@ -20,3 +20,12 @@ test('create package metadata instance from buffer', (t) => {
   t.is(pkg.time.modified, '2025-07-31T11:36:55.508Z');
   t.is(pkg.isUnpublished, false);
 })
+
+test('should throw error when data is not a valid package metadata', (t) => {
+  t.throws(() => {
+    new Package(Buffer.from('invalid'));
+  }, {
+    code: 'InvalidArg',
+    message: /TapeError/,
+  });
+});
