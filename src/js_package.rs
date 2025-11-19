@@ -33,8 +33,7 @@ pub struct JsPackage {
 #[napi]
 impl JsPackage {
     #[napi(constructor)]
-    pub fn new(data: Buffer) -> Result<Self> {
-        let data = data.into();
+    pub fn new(data: &[u8]) -> Result<Self> {
         Ok(JsPackage {
             package: Package::from_data(data)
                 .map_err(|e| napi::Error::new(napi::Status::InvalidArg, e.to_string()))?,

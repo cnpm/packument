@@ -6,7 +6,7 @@
  * return the diff versions from local to remote
  */
 export declare class Package {
-  constructor(data: Buffer)
+  constructor(data: Uint8Array)
   get name(): string
   get description(): string | null
   get readme(): string | null
