@@ -12,7 +12,7 @@ self_cell!(
     /// Package full metadata from npm registry, called "packument"
     /// <https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md>
     pub struct Package {
-        owner: MutBorrow<Box<[u8]>>,
+        owner: MutBorrow<Vec<u8>>,
 
         #[covariant]
         dependent: BorrowedValue,
@@ -20,8 +20,8 @@ self_cell!(
 );
 
 impl Package {
-    pub fn from_data(data: &[u8]) -> Result<Self, simd_json::Error> {
-        Self::try_new(MutBorrow::new(Box::from(data)), |bytes| {
+    pub fn from_data(data: Vec<u8>) -> Result<Self, simd_json::Error> {
+        Self::try_new(MutBorrow::new(data), |bytes| {
             simd_json::to_borrowed_value(bytes.borrow_mut())
         })
     }
@@ -238,7 +238,7 @@ mod tests {
                 }
             }
         }"#;
-        let package = Package::from_data(data.as_bytes()).unwrap();
+        let package = Package::from_data(data.as_bytes().to_vec()).unwrap();
         assert_eq!(package.name(), "leftpad");
         assert_eq!(package.description(), None);
         assert_eq!(package.readme(), None);
@@ -310,7 +310,7 @@ mod tests {
             "name": "leftpad",
             "time": { "unpublished": "2024-11-12T08:15:30.000Z" }
         }"#;
-        let package = Package::from_data(data.as_bytes()).unwrap();
+        let package = Package::from_data(data.as_bytes().to_vec()).unwrap();
         assert!(package.is_unpublished());
 
         let data = r#"
@@ -318,7 +318,7 @@ mod tests {
             "name": "leftpad",
             "time": { "modified": "2024-11-12T08:15:30.000Z" }
         }"#;
-        let package = Package::from_data(data.as_bytes()).unwrap();
+        let package = Package::from_data(data.as_bytes().to_vec()).unwrap();
         assert!(!package.is_unpublished());
     }
 }
