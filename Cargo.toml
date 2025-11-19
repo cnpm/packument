@@ -11,6 +11,10 @@ crate-type = ["cdylib"]
 [dependencies]
 napi = "3.0.0"
 napi-derive = "3.0.0"
+rustc-hash = "2.1.1"
+self_cell = "1.2.1"
+simd-json = "0.17.0"
+tracing = "0.1.41"
 
 [build-dependencies]
 napi-build = "2"

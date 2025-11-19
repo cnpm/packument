@@ -1,21 +1,40 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { Bench } from 'tinybench'
 
-import { plus100 } from '../index.js'
+import { Package } from '../index.js'
 
-function add(a: number) {
-  return a + 100
+const fixtures = path.join(import.meta.dirname, '../__test__/fixtures');
+const smallData = fs.readFileSync(path.join(fixtures, 'a.json'));
+const largeData = fs.readFileSync(path.join(fixtures, 'npm.json'));
+
+function JSONParse(data: Buffer) {
+  // @ts-expect-error ignore the type error
+  return JSON.parse(data).name;
 }
 
-const b = new Bench()
+function SimdJSONParse(data: Buffer) {
+  return new Package(data).name;
+}
 
-b.add('Native a + 100', () => {
-  plus100(10)
-})
+const b = new Bench();
 
-b.add('JavaScript a + 100', () => {
-  add(10)
-})
+b.add('JSONParse small data', () => {
+  JSONParse(smallData);
+});
 
-await b.run()
+b.add('SimdJSONParse small data', () => {
+  SimdJSONParse(smallData);
+});
 
-console.table(b.table())
+b.add('JSONParse large data', () => {
+  JSONParse(largeData);
+});
+
+b.add('SimdJSONParse large data', () => {
+  SimdJSONParse(largeData);
+});
+
+await b.run();
+
+console.table(b.table());
