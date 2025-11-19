@@ -73,19 +73,6 @@ In this package, we choose a better way to solve this problem. We release differ
 - yarn build
 - yarn test
 
-And you will see:
-
-```bash
-$ ava --verbose
-
-  ✔ sync function from native code
-  ✔ sleep function from native code (201ms)
-  ─
-
-  2 tests passed
-✨  Done in 1.12s.
-```
-
 ## Release package
 
 Ensure you have set your **NPM_TOKEN** in the `GitHub` project setting.

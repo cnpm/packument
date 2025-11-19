@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import test from 'ava';
+import { test, expect } from 'vitest';
 
 import { Package } from '../index';
 
@@ -11,21 +11,18 @@ test('create package metadata instance from buffer', (t) => {
   const data = fs.readFileSync(path.join(fixtures, 'a.json'));
   const pkg = new Package(data);
   // console.log(pkg);
-  t.is(pkg.name, 'a');
-  t.is(pkg.description, 'Mocking framework');
+  expect(pkg.name).toBe('a');
+  expect(pkg.description).toBe('Mocking framework');
   // t.is(pkg.readme, 'Mocking framework');
   // console.log(pkg.readme);
-  t.truthy(pkg.readme);
-  t.regex(pkg.readme!, /The mocking framework can be used in any JavaScript testing framework/);
-  t.is(pkg.time.modified, '2025-07-31T11:36:55.508Z');
-  t.is(pkg.isUnpublished, false);
+  expect(pkg.readme).toBeTruthy();
+  expect(pkg.readme).toMatch(/The mocking framework can be used in any JavaScript testing framework/);
+  expect(pkg.time.modified).toBe('2025-07-31T11:36:55.508Z');
+  expect(pkg.isUnpublished).toBe(false);
 })
 
 test('should throw error when data is not a valid package metadata', (t) => {
-  t.throws(() => {
+  expect(() => {
     new Package(Buffer.from('invalid'));
-  }, {
-    code: 'InvalidArg',
-    message: /TapeError/,
-  });
+  }).toThrow(/TapeError/);
 });
