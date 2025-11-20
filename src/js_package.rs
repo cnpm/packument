@@ -57,7 +57,7 @@ impl<'a> JsPackage<'a> {
     pub fn readme(&self) -> Option<String> {
         self.root
             .get("readme")
-                .and_then(|v| v.as_str().map(|s| s.to_string()))
+            .and_then(|v| v.as_str().map(|s| s.to_string()))
     }
 
     #[napi(getter)]
