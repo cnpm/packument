@@ -90,7 +90,7 @@
       "taplo format"
     ],
     "*.rs": [
-      "cargo fmt"
+      "cargo fmt --"
     ]
   },
   "prettier": {
