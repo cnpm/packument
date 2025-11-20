@@ -6,17 +6,11 @@
  * return the diff versions from local to remote
  */
 export declare class Package {
-  constructor(data: Buffer)
-  get name(): string
+  constructor(data: Uint8Array)
+  get name(): string | null
   get description(): string | null
   get readme(): string | null
-  get time(): Record<string, string>
+  get time(): Record<string, string> | null
   get isUnpublished(): boolean
 }
 export type JsPackage = Package
-
-export declare class PackageSonic {
-  constructor(data: Uint8Array)
-  get name(): string
-}
-export type JsPackageSonic = PackageSonic

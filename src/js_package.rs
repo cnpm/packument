@@ -2,11 +2,8 @@ use std::collections::HashMap;
 
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
-use sonic_rs::{from_slice, from_str, json};
-use sonic_rs::JsonValueMutTrait;
-use sonic_rs::{pointer, JsonValueTrait, LazyValue};
-
-use crate::package::Package;
+use sonic_rs::from_slice;
+use sonic_rs::{JsonValueTrait, LazyValue, to_object_iter};
 
 /// Diff two packages
 /// source implement from cnpmcore <https://github.com/cnpm/cnpmcore/blob/master/app/core/service/PackageSyncerService.ts#L682>
@@ -29,66 +26,61 @@ use crate::package::Package;
 // }
 
 #[napi(js_name = "Package")]
-pub struct JsPackage {
-    package: Package,
+pub struct JsPackage<'a> {
+    root: LazyValue<'a>,
 }
 
 #[napi]
-impl JsPackage {
+impl<'a> JsPackage<'a> {
     #[napi(constructor)]
-    pub fn new(data: Buffer) -> Result<Self> {
-        Ok(JsPackage {
-            package: Package::from_data(data.into())
-                .map_err(|e| napi::Error::new(napi::Status::InvalidArg, e.to_string()))?,
-        })
+    pub fn new(data: &'a [u8]) -> Result<Self> {
+        let root: LazyValue = from_slice(data).map_err(|e| Error::new(Status::InvalidArg, e.to_string()))?;
+        Ok(JsPackage { root })
     }
 
     #[napi(getter)]
-    pub fn name(&self) -> String {
-        self.package.name().to_string()
+    pub fn name(&self) -> Option<String> {
+        self.root.get("name").and_then(|v| v.as_str().map(|s| s.to_string()))
     }
 
     #[napi(getter)]
     pub fn description(&self) -> Option<String> {
-        self.package.description().map(|s| s.to_string())
+        self.root.get("description").and_then(|v| v.as_str().map(|s| s.to_string()))
     }
 
     #[napi(getter)]
     pub fn readme(&self) -> Option<String> {
-        self.package.readme().map(|s| s.to_string())
+        self.root.get("readme").and_then(|v| v.as_str().map(|s| s.to_string()))
     }
 
     #[napi(getter)]
-    pub fn time(&self) -> HashMap<String, String> {
-        let time = self.package.time();
+    pub fn time(&self) -> Option<HashMap<String, String>> {
+        let Some(time) = self.root.get("time") else {
+            return None;
+        };
         let mut out = HashMap::default();
-        for (key, value) in time.iter() {
-            out.insert(key.to_string(), value.to_string());
+        for iter in to_object_iter(time.as_raw_str()) {
+            if let Ok((key, value)) = iter {
+                if let Some(value) = value.as_str() {
+                    out.insert(key.to_string(), value.to_string());
+                }
+            }
         }
-        out
+        Some(out)
     }
 
     #[napi(getter)]
     pub fn is_unpublished(&self) -> bool {
-        self.package.is_unpublished()
-    }
-}
-
-#[napi(js_name = "PackageSonic")]
-pub struct JsPackageSonic<'a> {
-    package: LazyValue<'a>,
-}
-
-#[napi]
-impl<'a> JsPackageSonic<'a> {
-    #[napi(constructor)]
-    pub fn new(data: &'a [u8]) -> Result<Self> {
-        let root: LazyValue = from_slice(data).unwrap();
-        Ok(JsPackageSonic { package: root })
-    }
-
-    #[napi(getter)]
-    pub fn name(&self) -> String {
-        self.package.get("name").as_str().unwrap().to_string()
+        let Some(time) = self.root.get("time") else {
+            return false;
+        };
+        for iter in to_object_iter(time.as_raw_str()) {
+            if let Ok((key, value)) = iter {
+                if key == "unpublished" && value.is_str() {
+                    return true;
+                }
+            }
+        }
+        false
     }
 }

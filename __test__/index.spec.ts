@@ -7,7 +7,7 @@ import { Package } from '../index';
 
 const fixtures = path.join(import.meta.dirname, 'fixtures');
 
-test('create package metadata instance from buffer', (t) => {
+test('create package metadata instance from buffer', () => {
   const data = fs.readFileSync(path.join(fixtures, 'a.json'));
   const pkg = new Package(data);
   // console.log(pkg);
@@ -17,12 +17,14 @@ test('create package metadata instance from buffer', (t) => {
   // console.log(pkg.readme);
   expect(pkg.readme).toBeTruthy();
   expect(pkg.readme).toMatch(/The mocking framework can be used in any JavaScript testing framework/);
-  expect(pkg.time.modified).toBe('2025-07-31T11:36:55.508Z');
+  expect(pkg.time).toBeTruthy();
+  // console.log(pkg.time);
+  expect(pkg.time?.modified).toBe('2025-07-31T11:36:55.508Z');
   expect(pkg.isUnpublished).toBe(false);
-})
+});
 
-test('should throw error when data is not a valid package metadata', (t) => {
+test('should throw error when data is not a valid package metadata', () => {
   expect(() => {
     new Package(Buffer.from('invalid'));
-  }).toThrow(/TapeError/);
+  }).toThrow(/Invalid JSON value at line 1 column 1/);
 });
