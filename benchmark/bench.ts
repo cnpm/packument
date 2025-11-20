@@ -53,15 +53,21 @@ b.add('SonicJSONParse large data (22MB)', () => {
 });
 
 b.add('JSONParse super large data (89M)', () => {
+  // console.log('JSONParse before', process.memoryUsage());
   JSONParse(superLargeData);
+  // console.log('JSONParse after', process.memoryUsage());
 });
 
 b.add('SimdJSONParse super large data (89M)', () => {
+  // console.log('SimdJSONParse before', process.memoryUsage());
   SimdJSONParse(superLargeData);
+  // console.log('SimdJSONParse after', process.memoryUsage());
 });
 
 b.add('SonicJSONParse super large data (89M)', () => {
+  // console.log('SonicJSONParse before', process.memoryUsage());
   SonicJSONParse(superLargeData);
+  // console.log('SonicJSONParse after', process.memoryUsage());
 });
 
 await b.run();

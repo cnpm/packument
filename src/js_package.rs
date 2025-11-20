@@ -4,7 +4,7 @@ use napi::bindgen_prelude::*;
 use napi_derive::napi;
 use sonic_rs::{from_slice, from_str, json};
 use sonic_rs::JsonValueMutTrait;
-use sonic_rs::{pointer, JsonValueTrait, Value};
+use sonic_rs::{pointer, JsonValueTrait, LazyValue};
 
 use crate::package::Package;
 
@@ -75,15 +75,15 @@ impl JsPackage {
 }
 
 #[napi(js_name = "PackageSonic")]
-pub struct JsPackageSonic {
-    package: Value,
+pub struct JsPackageSonic<'a> {
+    package: LazyValue<'a>,
 }
 
 #[napi]
-impl JsPackageSonic {
+impl<'a> JsPackageSonic<'a> {
     #[napi(constructor)]
-    pub fn new(data: &[u8]) -> Result<Self> {
-        let root: Value = from_slice(data).unwrap();
+    pub fn new(data: &'a [u8]) -> Result<Self> {
+        let root: LazyValue = from_slice(data).unwrap();
         Ok(JsPackageSonic { package: root })
     }
 
