@@ -2,6 +2,9 @@ use std::collections::HashMap;
 
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
+use sonic_rs::{from_slice, from_str, json};
+use sonic_rs::JsonValueMutTrait;
+use sonic_rs::{pointer, JsonValueTrait, Value};
 
 use crate::package::Package;
 
@@ -68,5 +71,24 @@ impl JsPackage {
     #[napi(getter)]
     pub fn is_unpublished(&self) -> bool {
         self.package.is_unpublished()
+    }
+}
+
+#[napi(js_name = "PackageSonic")]
+pub struct JsPackageSonic {
+    package: Value,
+}
+
+#[napi]
+impl JsPackageSonic {
+    #[napi(constructor)]
+    pub fn new(data: &[u8]) -> Result<Self> {
+        let root: Value = from_slice(data).unwrap();
+        Ok(JsPackageSonic { package: root })
+    }
+
+    #[napi(getter)]
+    pub fn name(&self) -> String {
+        self.package.get("name").as_str().unwrap().to_string()
     }
 }

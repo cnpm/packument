@@ -14,3 +14,9 @@ export declare class Package {
   get isUnpublished(): boolean
 }
 export type JsPackage = Package
+
+export declare class PackageSonic {
+  constructor(data: Uint8Array)
+  get name(): string
+}
+export type JsPackageSonic = PackageSonic
