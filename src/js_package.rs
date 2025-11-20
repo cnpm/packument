@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
 use sonic_rs::from_slice;
-use sonic_rs::{JsonValueTrait, LazyValue, to_object_iter};
+use sonic_rs::{to_object_iter, JsonValueTrait, LazyValue};
 
 /// Diff two packages
 /// source implement from cnpmcore <https://github.com/cnpm/cnpmcore/blob/master/app/core/service/PackageSyncerService.ts#L682>
@@ -34,23 +34,30 @@ pub struct JsPackage<'a> {
 impl<'a> JsPackage<'a> {
     #[napi(constructor)]
     pub fn new(data: &'a [u8]) -> Result<Self> {
-        let root: LazyValue = from_slice(data).map_err(|e| Error::new(Status::InvalidArg, e.to_string()))?;
+        let root: LazyValue =
+            from_slice(data).map_err(|e| Error::new(Status::InvalidArg, e.to_string()))?;
         Ok(JsPackage { root })
     }
 
     #[napi(getter)]
     pub fn name(&self) -> Option<String> {
-        self.root.get("name").and_then(|v| v.as_str().map(|s| s.to_string()))
+        self.root
+            .get("name")
+            .and_then(|v| v.as_str().map(|s| s.to_string()))
     }
 
     #[napi(getter)]
     pub fn description(&self) -> Option<String> {
-        self.root.get("description").and_then(|v| v.as_str().map(|s| s.to_string()))
+        self.root
+            .get("description")
+            .and_then(|v| v.as_str().map(|s| s.to_string()))
     }
 
     #[napi(getter)]
     pub fn readme(&self) -> Option<String> {
-        self.root.get("readme").and_then(|v| v.as_str().map(|s| s.to_string()))
+        self.root
+            .get("readme")
+            .and_then(|v| v.as_str().map(|s| s.to_string()))
     }
 
     #[napi(getter)]
