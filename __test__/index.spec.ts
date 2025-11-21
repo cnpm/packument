@@ -48,3 +48,17 @@ test('should get dist.attestations and dist.provenance', () => {
   const pkg = new Package(data)
   expect(pkg.getLatestVersion()!.dist).matchSnapshot()
 })
+
+test('should get diff versions', () => {
+  const data = fs.readFileSync(path.join(fixtures, 'obug.json'))
+  const pkg = new Package(data)
+  const diff = pkg.diff(['1.0.0', '1.0.1', '10000000.222.111'])
+  // sort the diff by version, make sure snapshot is stable
+  diff.addedVersions.sort((a, b) => a[0].localeCompare(b[0]))
+  diff.removedVersions.sort()
+  expect(diff).matchSnapshot()
+  const [version, position] = diff.addedVersions[0]
+  const firstVersionData = JSON.parse(data.subarray(position[0], position[1]).toString())
+  expect(version).toBe(firstVersionData.version)
+  expect(firstVersionData).matchSnapshot()
+})

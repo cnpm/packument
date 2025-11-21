@@ -1,30 +1,11 @@
 use serde::Deserialize;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
 use sonic_rs::{from_slice, from_str};
 use sonic_rs::{to_object_iter, JsonValueTrait, LazyValue};
 
-/// Diff two packages
-/// source implement from cnpmcore <https://github.com/cnpm/cnpmcore/blob/master/app/core/service/PackageSyncerService.ts#L682>
-/// return the diff versions from local to remote
-// pub fn diff(local: &Package, remote: &Package) -> Vec<&str> {
-//     let local_versions = local.versions();
-//     let remote_versions = remote.versions();
-//     let mut diff = Vec::new();
-//     for (version, _) in local_versions {
-//         if remote_versions.get(version).is_none() {
-//             diff.push(version);
-//         }
-//     }
-//     for (version, _) in remote_versions {
-//         if local_versions.get(version).is_none() {
-//             diff.push(version);
-//         }
-//     }
-//     diff
-// }
 /// Package metadata document, sometimes informally called a "packument" or "doc.json".
 /// @see <https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md>
 #[napi]
@@ -39,6 +20,79 @@ impl<'a> Package<'a> {
         let root: LazyValue =
             from_slice(data).map_err(|e| Error::new(Status::InvalidArg, e.to_string()))?;
         Ok(Package { root })
+    }
+
+    /// Find the diff versions between the local package and the remote package
+    /// source implement from cnpmcore <https://github.com/cnpm/cnpmcore/blob/master/app/core/service/PackageSyncerService.ts#L682>
+    /// return the diff versions from local to remote
+    ///
+    /// ### Parameters
+    /// - `Vec<String>`: the exists versions of the local package
+    /// ### Return
+    /// - `DiffResult`: the diff versions
+    /// - `String`: the version
+    /// - `(u32, u32)`: the version meta data position
+    /// ### Example
+    /// ```ts
+    /// const existsVersions = ['1.0.0', '1.0.1'];
+    /// const remotePkg = new Package(remoteBuffer);
+    /// const diff = remotePkg.diff(existsVersions);
+    /// console.log(diff);
+    ///
+    /// // read version meta data from buffer
+    /// const versionData = remoteBuffer.subarray(position[0], position[1]);
+    /// const version = JSON.parse(versionData);
+    /// ```
+    /// ### Output
+    /// ```ts
+    /// {
+    ///   added_versions: [
+    ///     ["1.1.0", [100992, 119796]],
+    ///     ["1.2.0", [119797, 138592]],
+    ///   ],
+    ///   removed_versions: [
+    ///     ["1.0.1", [100992, 119796]],
+    ///   ],
+    /// }
+    /// ```
+    #[napi]
+    pub fn diff(&self, exists_versions: Vec<String>) -> Result<DiffResult> {
+        let mut added_versions = Vec::new();
+        let mut removed_versions = Vec::new();
+        let Some(versions) = self.root.get("versions") else {
+            return Ok(DiffResult {
+                added_versions,
+                removed_versions,
+            });
+        };
+
+        let exists_versions_set = exists_versions
+            .iter()
+            .map(|s| s.as_str())
+            .collect::<HashSet<_>>();
+        let mut all_versions = HashMap::new();
+        for (key, value) in to_object_iter(versions.as_raw_str()).flatten() {
+            all_versions.insert(key, self.position(&value));
+        }
+
+        // remove the versions that exist in the local package but not in the remote package
+        for version in exists_versions_set.iter() {
+            let version = *version;
+            if all_versions.get(version).is_none() {
+                removed_versions.push(version.to_string());
+            }
+        }
+
+        // add the versions that do not exist in the local package but in the remote package
+        for (version, value) in all_versions {
+            if !exists_versions_set.contains(version.as_ref()) {
+                added_versions.push((version.to_string(), value));
+            }
+        }
+        Ok(DiffResult {
+            added_versions,
+            removed_versions,
+        })
     }
 
     #[napi(getter)]
@@ -68,9 +122,7 @@ impl<'a> Package<'a> {
     #[napi(getter)]
     pub fn readme_position(&self) -> Option<(u32, u32)> {
         let readme = self.root.get("readme")?;
-        let offset =
-            readme.as_raw_str().as_ptr() as usize - self.root.as_raw_str().as_ptr() as usize;
-        Some((offset as u32, (offset + readme.as_raw_str().len()) as u32))
+        Some(self.position(&readme))
     }
 
     #[napi(getter)]
@@ -136,6 +188,19 @@ impl<'a> Package<'a> {
         }
         None
     }
+
+    fn position(&self, value: &LazyValue) -> (u32, u32) {
+        let offset =
+            value.as_raw_str().as_ptr() as usize - self.root.as_raw_str().as_ptr() as usize;
+        (offset as u32, (offset + value.as_raw_str().len()) as u32)
+    }
+}
+
+#[derive(Debug, Deserialize)]
+#[napi(object)]
+pub struct DiffResult {
+    pub added_versions: Vec<(String, (u32, u32))>,
+    pub removed_versions: Vec<String>,
 }
 
 /// Version metadata
