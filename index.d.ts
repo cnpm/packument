@@ -24,22 +24,71 @@ export interface Attestation {
   provenance?: Provenance
 }
 
+/** Bugs metadata */
+export interface Bugs {
+  url?: string
+}
+
 /**
  * Distribution metadata
  * @see <https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md#dist>
  */
 export interface Dist {
+  /** the url of the tarball containing the payload for this package */
   tarball?: string
+  /** the SHA-1 sum of the tarball */
   shasum?: string
+  /**
+   * since Apr 2017, string in the format <hashAlgorithm>-<base64-hash>,
+   * refer the [Subresource Integrity](https://en.wikipedia.org/wiki/Subresource_Integrity) and [cacache](https://github.com/npm/cacache#integrity) package for more details
+   */
   integrity?: string
+  /** since Feb 2018, the number of files in the tarball, folder excluded */
   fileCount?: number
+  /** since Feb 2018, the total byte of the unpacked files in the tarball */
   unpackedSize?: number
   signatures?: Array<Signature>
   attestations?: Attestation
 }
 
+/**
+ * Human metadata
+ * @see <https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md#human>
+ */
+export interface Human {
+  /** a freeform string name */
+  name?: string
+  /** an email address */
+  email?: string
+  /** a url for a web page with more information about the author */
+  url?: string
+}
+
+export interface NpmOperationalInternal {
+  tmp?: string
+  host?: string
+}
+
+export interface PeerDependenciesMeta {
+  optional?: boolean
+}
+
 export interface Provenance {
   predicateType?: string
+}
+
+export interface PublishConfig {
+  registry?: string
+  access?: string
+}
+
+/**
+ * Repository metadata
+ * @see <https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md#repository>
+ */
+export interface Repository {
+  type?: string
+  url?: string
 }
 
 export interface Signature {
@@ -54,6 +103,16 @@ export interface Signature {
 export interface Version {
   name?: string
   version?: string
-  homepage?: string
+  maintainers?: Array<Human>
   dist?: Dist
+  funding?: Array<string>
+  scripts?: Record<string, string>
+  description?: string
+  hasShrinkwrap?: boolean
+  /** an array of operating systems supported by the package */
+  os?: Array<string>
+  /** an array of CPU architectures supported by the package */
+  cpu?: Array<string>
+  /** an array of libc supported by the package */
+  libc?: Array<string>
 }

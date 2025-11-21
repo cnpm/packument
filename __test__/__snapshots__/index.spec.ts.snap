@@ -2,6 +2,7 @@
 
 exports[`create package metadata instance from buffer 1`] = `
 {
+  "description": "Mocking framework",
   "dist": {
     "fileCount": 5,
     "integrity": "sha512-RUq4BToxBYujpFGSopAC7ajZwlo2pdhYHYz0+lN8ZXbq5PMoad79xckGmSFA3C9ynQ57A+cMxVBQtkE5x/OU2g==",
@@ -15,7 +16,17 @@ exports[`create package metadata instance from buffer 1`] = `
     "tarball": "https://registry.npmjs.org/a/-/a-4.0.0.tgz",
     "unpackedSize": 17994,
   },
-  "homepage": "https://github.com/alfateam/a#readme",
+  "hasShrinkwrap": false,
+  "maintainers": [
+    {
+      "email": "adlan.elm@gmail.com",
+      "name": "adlanelm",
+    },
+    {
+      "email": "lars.roald@gmail.com",
+      "name": "lroal",
+    },
+  ],
   "name": "a",
   "version": "4.0.0",
 }
@@ -45,6 +56,7 @@ exports[`should get dist.attestations and dist.provenance 1`] = `
 
 exports[`should get latest version 1`] = `
 {
+  "description": "a package manager for JavaScript",
   "dist": {
     "fileCount": 2133,
     "integrity": "sha512-7iKzNfy8lWYs3zq4oFPa8EXZz5xt9gQNKJZau3B1ErLBb6bF7sBJ00x09485DOvRT2l5Gerbl3VlZNT57MxJVA==",
@@ -58,8 +70,53 @@ exports[`should get latest version 1`] = `
     "tarball": "https://registry.npmjs.org/npm/-/npm-11.6.2.tgz",
     "unpackedSize": 11785613,
   },
-  "homepage": "https://docs.npmjs.com/",
+  "hasShrinkwrap": false,
+  "maintainers": [
+    {
+      "email": "gar+npm@danger.computer",
+      "name": "gar",
+    },
+    {
+      "email": "saquibkhan@github.com",
+      "name": "saquibkhan",
+    },
+    {
+      "email": "npm-cli+bot@github.com",
+      "name": "npm-cli-ops",
+    },
+    {
+      "email": "reggi@github.com",
+      "name": "reggi",
+    },
+    {
+      "email": "hashtagchris@github.com",
+      "name": "hashtagchris",
+    },
+    {
+      "email": "owlstronaut@github.com",
+      "name": "owlstronaut",
+    },
+  ],
   "name": "npm",
+  "scripts": {
+    "dependencies": "node scripts/bundle-and-gitignore-deps.js && node scripts/dependency-graph.js",
+    "dumpconf": "env | grep npm | sort | uniq",
+    "eslint": "eslint "**/*.{js,cjs,ts,mjs,jsx,tsx}"",
+    "licenses": "npx licensee --production --errors-only",
+    "lint": "node . run eslint",
+    "lint-all": "node . run lint --workspaces --include-workspace-root --if-present",
+    "lintfix": "node . run eslint -- --fix",
+    "postlint": "template-oss-check",
+    "posttest": "node . run lint",
+    "prepack": "node . run build -w docs",
+    "resetdeps": "node scripts/resetdeps.js",
+    "rp-pull-request": "node scripts/update-authors.js",
+    "snap": "tap",
+    "template-oss-apply": "template-oss-apply --force",
+    "test": "tap",
+    "test-all": "node . run test --workspaces --include-workspace-root --if-present",
+    "test:nocolor": "CI=true tap -Rclassic",
+  },
   "version": "11.6.2",
 }
 `;
