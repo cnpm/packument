@@ -25,7 +25,6 @@ use sonic_rs::{to_object_iter, JsonValueTrait, LazyValue};
 //     }
 //     diff
 // }
-
 /// Package metadata document, sometimes informally called a "packument" or "doc.json".
 /// @see <https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md>
 #[napi]
@@ -68,9 +67,7 @@ impl<'a> Package<'a> {
 
     #[napi(getter)]
     pub fn readme_position(&self) -> Option<(u32, u32)> {
-        let Some(readme) = self.root.get("readme") else {
-            return None;
-        };
+        let readme = self.root.get("readme")?;
         let offset =
             readme.as_raw_str().as_ptr() as usize - self.root.as_raw_str().as_ptr() as usize;
         Some((offset as u32, (offset + readme.as_raw_str().len()) as u32))
@@ -78,9 +75,7 @@ impl<'a> Package<'a> {
 
     #[napi(getter)]
     pub fn time(&self) -> Option<HashMap<String, String>> {
-        let Some(time) = self.root.get("time") else {
-            return None;
-        };
+        let time = self.root.get("time")?;
         let mut out = HashMap::default();
         for (key, value) in to_object_iter(time.as_raw_str()).flatten() {
             if let Some(value) = value.as_str() {
@@ -119,9 +114,7 @@ impl<'a> Package<'a> {
 
     #[napi]
     pub fn get_latest_version(&self) -> Option<Version> {
-        let Some(tags) = self.root.get("dist-tags") else {
-            return None;
-        };
+        let tags = self.root.get("dist-tags")?;
         let mut latest_version = None;
         for (key, value) in to_object_iter(tags.as_raw_str()).flatten() {
             if key == "latest" {
@@ -131,13 +124,9 @@ impl<'a> Package<'a> {
                 }
             }
         }
-        let Some(latest_version) = latest_version else {
-            return None;
-        };
+        let latest_version = latest_version?;
 
-        let Some(versions) = self.root.get("versions") else {
-            return None;
-        };
+        let versions = self.root.get("versions")?;
         for (key, value) in to_object_iter(versions.as_raw_str()).flatten() {
             if key == latest_version {
                 if let Ok(version) = from_str(value.as_raw_str()) {
