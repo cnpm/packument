@@ -2,19 +2,22 @@
 [package]
 authors = ["MK <fengmk2@gmail.com>"]
 edition = "2021"
-name = "packument"
+name    = "packument"
 version = "0.1.0"
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-napi = "3.0.0"
+napi        = "3.0.0"
 napi-derive = "3.0.0"
+serde       = { version = "1.0.228", features = ["derive"] }
+sonic-rs    = "0.5.6"
+tracing     = "0.1.41"
 
 [build-dependencies]
 napi-build = "2"
 
 [profile.release]
-lto = true
+lto   = true
 strip = "symbols"
