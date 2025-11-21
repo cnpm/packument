@@ -19,6 +19,11 @@ export declare class Package {
   getLatestVersion(): Version | null
 }
 
+export interface Attestation {
+  url?: string
+  provenance?: Provenance
+}
+
 /**
  * Distribution metadata
  * @see <https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md#dist>
@@ -27,10 +32,19 @@ export interface Dist {
   tarball?: string
   shasum?: string
   integrity?: string
-  signature?: string
   fileCount?: number
   unpackedSize?: number
-  npmSignature?: string
+  signatures?: Array<Signature>
+  attestations?: Attestation
+}
+
+export interface Provenance {
+  predicateType?: string
+}
+
+export interface Signature {
+  sig?: string
+  keyid?: string
 }
 
 /**

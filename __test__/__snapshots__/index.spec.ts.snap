@@ -6,11 +6,60 @@ exports[`create package metadata instance from buffer 1`] = `
     "fileCount": 5,
     "integrity": "sha512-RUq4BToxBYujpFGSopAC7ajZwlo2pdhYHYz0+lN8ZXbq5PMoad79xckGmSFA3C9ynQ57A+cMxVBQtkE5x/OU2g==",
     "shasum": "7d4dead8e76fdfe1c5124120723c5b5bfc749b64",
+    "signatures": [
+      {
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+        "sig": "MEUCIQCjlEwkftjboTYijrxbm2zHAlJEfT9JOh61wEeh4aCfFwIgeB+q7y0gE7/byw4bnD5RVCtZMxsdTPXD5r5SN4KSLAc=",
+      },
+    ],
     "tarball": "https://registry.npmjs.org/a/-/a-4.0.0.tgz",
     "unpackedSize": 17994,
   },
   "homepage": "https://github.com/alfateam/a#readme",
   "name": "a",
   "version": "4.0.0",
+}
+`;
+
+exports[`should get dist.attestations and dist.provenance 1`] = `
+{
+  "attestations": {
+    "provenance": {
+      "predicateType": "https://slsa.dev/provenance/v1",
+    },
+    "url": "https://registry.npmjs.org/-/npm/v1/attestations/obug@2.1.0",
+  },
+  "fileCount": 10,
+  "integrity": "sha512-uu/tgLPoa75CFA7UDkmqspKbefvZh1WMPwkU3bNr0PY746a/+xwXVgbw5co5C3GvJj3h5u8g/pbxXzI0gd1QFg==",
+  "shasum": "c5669094b3c8ae21a6097871c32cc908cac06cf9",
+  "signatures": [
+    {
+      "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+      "sig": "MEUCIACwBbXrvX4f+Ef7zkZdhIdWSarVyT/n0DS/2TY7KMpDAiEAswZj4KsrPyfsj4DaJD+NEW3RQm2HidtAP2833K1/6EU=",
+    },
+  ],
+  "tarball": "https://registry.npmjs.org/obug/-/obug-2.1.0.tgz",
+  "unpackedSize": 21111,
+}
+`;
+
+exports[`should get latest version 1`] = `
+{
+  "dist": {
+    "fileCount": 2133,
+    "integrity": "sha512-7iKzNfy8lWYs3zq4oFPa8EXZz5xt9gQNKJZau3B1ErLBb6bF7sBJ00x09485DOvRT2l5Gerbl3VlZNT57MxJVA==",
+    "shasum": "2af8ff1f23b279df1e5289db7c70cfedd0fe18c5",
+    "signatures": [
+      {
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+        "sig": "MEYCIQCAkK5rkv9ZQjkA+v/7Ii0mwwRZbRj0G6QtZ3UiODbbYAIhAJt6a8W3i9q/O/gDjClQIU75FOanVs4N/isBVUtJ0nBU",
+      },
+    ],
+    "tarball": "https://registry.npmjs.org/npm/-/npm-11.6.2.tgz",
+    "unpackedSize": 11785613,
+  },
+  "homepage": "https://docs.npmjs.com/",
+  "name": "npm",
+  "version": "11.6.2",
 }
 `;

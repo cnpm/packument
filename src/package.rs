@@ -82,11 +82,9 @@ impl<'a> Package<'a> {
             return None;
         };
         let mut out = HashMap::default();
-        for iter in to_object_iter(time.as_raw_str()) {
-            if let Ok((key, value)) = iter {
-                if let Some(value) = value.as_str() {
-                    out.insert(key.to_string(), value.to_string());
-                }
+        for (key, value) in to_object_iter(time.as_raw_str()).flatten() {
+            if let Some(value) = value.as_str() {
+                out.insert(key.to_string(), value.to_string());
             }
         }
         Some(out)
@@ -97,11 +95,9 @@ impl<'a> Package<'a> {
         let Some(time) = self.root.get("time") else {
             return false;
         };
-        for iter in to_object_iter(time.as_raw_str()) {
-            if let Ok((key, value)) = iter {
-                if key == "unpublished" && value.is_str() {
-                    return true;
-                }
+        for (key, value) in to_object_iter(time.as_raw_str()).flatten() {
+            if key == "unpublished" && value.is_str() {
+                return true;
             }
         }
         false
@@ -113,12 +109,10 @@ impl<'a> Package<'a> {
         let Some(versions) = self.root.get("versions") else {
             return Ok(out);
         };
-        for iter in to_object_iter(versions.as_raw_str()) {
-            if let Ok((key, value)) = iter {
-                let version: Version = from_str(value.as_raw_str())
-                    .map_err(|e| Error::new(Status::InvalidArg, e.to_string()))?;
-                out.insert(key.to_string(), version);
-            }
+        for (key, value) in to_object_iter(versions.as_raw_str()).flatten() {
+            let version: Version = from_str(value.as_raw_str())
+                .map_err(|e| Error::new(Status::InvalidArg, e.to_string()))?;
+            out.insert(key.to_string(), version);
         }
         Ok(out)
     }
@@ -129,13 +123,11 @@ impl<'a> Package<'a> {
             return None;
         };
         let mut latest_version = None;
-        for iter in to_object_iter(tags.as_raw_str()) {
-            if let Ok((key, value)) = iter {
-                if key == "latest" {
-                    if let Some(version) = value.as_str() {
-                        latest_version = Some(version.to_string());
-                        break;
-                    }
+        for (key, value) in to_object_iter(tags.as_raw_str()).flatten() {
+            if key == "latest" {
+                if let Some(version) = value.as_str() {
+                    latest_version = Some(version.to_string());
+                    break;
                 }
             }
         }
@@ -146,12 +138,10 @@ impl<'a> Package<'a> {
         let Some(versions) = self.root.get("versions") else {
             return None;
         };
-        for iter in to_object_iter(versions.as_raw_str()) {
-            if let Ok((key, value)) = iter {
-                if key == latest_version {
-                    if let Ok(version) = from_str(value.as_raw_str()) {
-                        return Some(version);
-                    }
+        for (key, value) in to_object_iter(versions.as_raw_str()).flatten() {
+            if key == latest_version {
+                if let Ok(version) = from_str(value.as_raw_str()) {
+                    return Some(version);
                 }
             }
         }
@@ -178,11 +168,31 @@ pub struct Dist {
     pub tarball: Option<String>,
     pub shasum: Option<String>,
     pub integrity: Option<String>,
-    pub signature: Option<String>,
     #[serde(rename = "fileCount")]
     pub file_count: Option<u32>,
     #[serde(rename = "unpackedSize")]
     pub unpacked_size: Option<u32>,
-    #[serde(rename = "npm-signature")]
-    pub npm_signature: Option<String>,
+    pub signatures: Option<Vec<Signature>>,
+    pub attestations: Option<Attestation>,
+}
+
+#[derive(Debug, Deserialize)]
+#[napi(object)]
+pub struct Signature {
+    pub sig: Option<String>,
+    pub keyid: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[napi(object)]
+pub struct Attestation {
+    pub url: Option<String>,
+    pub provenance: Option<Provenance>,
+}
+
+#[derive(Debug, Deserialize)]
+#[napi(object)]
+pub struct Provenance {
+    #[serde(rename = "predicateType")]
+    pub predicate_type: Option<String>,
 }

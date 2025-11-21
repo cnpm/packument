@@ -36,3 +36,15 @@ test('should throw error when data is not a valid package metadata', () => {
     new Package(Buffer.from('invalid'))
   }).toThrow(/Invalid JSON value at line 1 column 1/)
 })
+
+test('should get latest version', () => {
+  const data = fs.readFileSync(path.join(fixtures, 'npm.json'))
+  const pkg = new Package(data)
+  expect(pkg.getLatestVersion()).matchSnapshot()
+})
+
+test('should get dist.attestations and dist.provenance', () => {
+  const data = fs.readFileSync(path.join(fixtures, 'obug.json'))
+  const pkg = new Package(data)
+  expect(pkg.getLatestVersion()!.dist).matchSnapshot()
+})
