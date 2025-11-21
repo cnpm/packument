@@ -78,7 +78,7 @@ impl<'a> Package<'a> {
         // remove the versions that exist in the local package but not in the remote package
         for version in exists_versions_set.iter() {
             let version = *version;
-            if all_versions.get(version).is_none() {
+            if !all_versions.contains_key(version) {
                 removed_versions.push(version.to_string());
             }
         }
