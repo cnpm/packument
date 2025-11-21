@@ -1,0 +1,16 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`create package metadata instance from buffer 1`] = `
+{
+  "dist": {
+    "fileCount": 5,
+    "integrity": "sha512-RUq4BToxBYujpFGSopAC7ajZwlo2pdhYHYz0+lN8ZXbq5PMoad79xckGmSFA3C9ynQ57A+cMxVBQtkE5x/OU2g==",
+    "shasum": "7d4dead8e76fdfe1c5124120723c5b5bfc749b64",
+    "tarball": "https://registry.npmjs.org/a/-/a-4.0.0.tgz",
+    "unpackedSize": 17994,
+  },
+  "homepage": "https://github.com/alfateam/a#readme",
+  "name": "a",
+  "version": "4.0.0",
+}
+`;

@@ -4,13 +4,42 @@
  * Diff two packages
  * source implement from cnpmcore <https://github.com/cnpm/cnpmcore/blob/master/app/core/service/PackageSyncerService.ts#L682>
  * return the diff versions from local to remote
+ * Package metadata document, sometimes informally called a "packument" or "doc.json".
+ * @see <https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md>
  */
 export declare class Package {
   constructor(data: Uint8Array)
   get name(): string | null
   get description(): string | null
   get readme(): string | null
+  get readmePosition(): [number, number] | null
   get time(): Record<string, string> | null
   get isUnpublished(): boolean
+  get versions(): Record<string, Version>
+  getLatestVersion(): Version | null
 }
-export type JsPackage = Package
+
+/**
+ * Distribution metadata
+ * @see <https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md#dist>
+ */
+export interface Dist {
+  tarball?: string
+  shasum?: string
+  integrity?: string
+  signature?: string
+  fileCount?: number
+  unpackedSize?: number
+  npmSignature?: string
+}
+
+/**
+ * Version metadata
+ * @see <https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#version>
+ */
+export interface Version {
+  name?: string
+  version?: string
+  homepage?: string
+  dist?: Dist
+}

@@ -558,4 +558,3 @@ if (!nativeBinding) {
 
 module.exports = nativeBinding
 module.exports.Package = nativeBinding.Package
-module.exports.JsPackage = nativeBinding.JsPackage

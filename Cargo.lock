@@ -354,6 +354,7 @@ dependencies = [
  "napi",
  "napi-build",
  "napi-derive",
+ "serde",
  "sonic-rs",
  "tracing",
 ]
