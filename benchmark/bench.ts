@@ -4,6 +4,7 @@ import path from 'node:path'
 import { Bench } from 'tinybench'
 
 import { Package } from '../index.js'
+import { runMemoryBenchmarks } from './memory_usage.ts'
 
 const fixtures = path.join(import.meta.dirname, '../__test__/fixtures')
 const smallData = fs.readFileSync(path.join(fixtures, 'a.json'))
@@ -229,3 +230,27 @@ await b.run()
 
 console.table(b.table())
 // #endregion
+
+const script = path.join(import.meta.dirname, 'get_description.ts')
+await runMemoryBenchmarks([
+  {
+    name: 'JSONParse description (22M)',
+    command: `node ${script} json npm.json`,
+    prepare: '',
+  },
+  {
+    name: 'JSONParse description (89M)',
+    command: `node ${script} json @primer/react.json`,
+    prepare: '',
+  },
+  {
+    name: 'SonicJSONParse description (22M)',
+    command: `node ${script} sonic npm.json`,
+    prepare: '',
+  },
+  {
+    name: 'SonicJSONParse description (89M)',
+    command: `node ${script} sonic @primer/react.json`,
+    prepare: '',
+  },
+])
