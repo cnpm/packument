@@ -133,6 +133,8 @@ jobs:
           if-no-files-found: error
   test-macOS-windows-binding:
     name: Test bindings on ${{ matrix.settings.target }} - node@${{ matrix.node }}
+    permissions:
+      contents: read
     needs:
       - build
     strategy:
