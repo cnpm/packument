@@ -24,6 +24,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   lint:
+    permissions:
+      contents: read
     name: Lint
     runs-on: ubuntu-latest
     steps:
