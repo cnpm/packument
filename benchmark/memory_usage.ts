@@ -108,7 +108,7 @@ export async function runMemoryBenchmarks(benchmarks: Benchmark[]) {
   // Print results
   for (const result of results) {
     console.log(
-      `  ${result.name}: ${result.mean} MB (min: ${result.min} MB, max: ${result.max} MB, mean: ${result.mean} MB)`,
+      `  ${result.name}: ${result.mean} MB (min: ${result.min} MB, max: ${result.max} MB)`,
     )
   }
 
