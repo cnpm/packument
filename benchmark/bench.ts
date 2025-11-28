@@ -165,13 +165,13 @@ function SonicJSONParseReadmeJSONBufferWithPosition(data: Buffer): Buffer {
   return data.subarray(readmePosition![0], readmePosition![1])
 }
 
-console.log(
-  'big readme package: %o, %o, %o, %o',
-  JSONParseReadme(bigReadmeData).length,
-  SonicJSONParseReadme(bigReadmeData).length,
-  SonicJSONParseReadmeWithPosition(bigReadmeData).length,
-  SonicJSONParseReadmeJSONBufferWithPosition(bigReadmeData).length,
-)
+// console.log(
+//   'big readme package: %o, %o, %o, %o',
+//   JSONParseReadme(bigReadmeData).length,
+//   SonicJSONParseReadme(bigReadmeData).length,
+//   SonicJSONParseReadmeWithPosition(bigReadmeData).length,
+//   SonicJSONParseReadmeJSONBufferWithPosition(bigReadmeData).length,
+// )
 
 b = new Bench()
 b.add('JSONParse small data readme string (117KB)', () => {
@@ -232,25 +232,19 @@ console.table(b.table())
 // #endregion
 
 const script = path.join(import.meta.dirname, 'get_description.ts')
-await runMemoryBenchmarks([
-  {
-    name: 'JSONParse description (22M)',
-    command: `node ${script} json npm.json`,
+const benchmarks = [
+  { parser: 'JSONParse', size: '22M', file: 'npm.json' },
+  { parser: 'JSONParse', size: '89M', file: '@primer/react.json' },
+  { parser: 'SonicJSONParse', size: '22M', file: 'npm.json' },
+  { parser: 'SonicJSONParse', size: '89M', file: '@primer/react.json' },
+]
+
+const runner = process.version.startsWith('v20.') ? 'npx tsx' : 'node'
+
+await runMemoryBenchmarks(
+  benchmarks.map(({ parser, size, file }) => ({
+    name: `${parser} description (${size})`,
+    command: `${runner} ${script} ${parser} ${file}`,
     prepare: '',
-  },
-  {
-    name: 'JSONParse description (89M)',
-    command: `node ${script} json @primer/react.json`,
-    prepare: '',
-  },
-  {
-    name: 'SonicJSONParse description (22M)',
-    command: `node ${script} sonic npm.json`,
-    prepare: '',
-  },
-  {
-    name: 'SonicJSONParse description (89M)',
-    command: `node ${script} sonic @primer/react.json`,
-    prepare: '',
-  },
-])
+  })),
+)
