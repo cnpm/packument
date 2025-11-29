@@ -73,7 +73,7 @@ test('should get dist-tags with invalid data', () => {
   let pkg = new Package(Buffer.from('{}'))
   expect(pkg.distTags).toBeNull()
   pkg = new Package(Buffer.from('{"dist-tags": null}'))
-  expect(pkg.distTags).toEqual({})
+  expect(pkg.distTags).toBeNull()
   pkg = new Package(Buffer.from('{"dist-tags": {}}'))
   expect(pkg.distTags).toEqual({})
   pkg = new Package(Buffer.from('{"dist-tags": []}'))
@@ -90,7 +90,7 @@ test('should get maintainers with invalid data', () => {
   let pkg = new Package(Buffer.from('{}'))
   expect(pkg.maintainers).toBeNull()
   pkg = new Package(Buffer.from('{"maintainers": null}'))
-  expect(pkg.maintainers).toEqual([])
+  expect(pkg.maintainers).toBeNull()
   pkg = new Package(Buffer.from('{"maintainers": {"name": "test"}}'))
   expect(pkg.maintainers).toEqual([])
   pkg = new Package(Buffer.from('{"maintainers": {}}'))
@@ -99,13 +99,19 @@ test('should get maintainers with invalid data', () => {
   expect(pkg.maintainers).toEqual([])
 })
 
-test('should get repository', () => {
+test('should get repository from fixture', () => {
   const data = fs.readFileSync(path.join(fixtures, 'obug.json'))
-  let pkg = new Package(data)
+  const pkg = new Package(data)
   expect(pkg.repository).matchSnapshot()
-  pkg = new Package(Buffer.from('{"repository": "https://github.com/sxzz/obug.git"}'))
+})
+
+test('should get repository from string', () => {
+  const pkg = new Package(Buffer.from('{"repository": "https://github.com/sxzz/obug.git"}'))
   expect(pkg.repository).matchSnapshot()
-  pkg = new Package(Buffer.from('{"repository": {"type": "git", "url": "https://github.com/sxzz/obug.git"}}'))
+})
+
+test('should get repository from object', () => {
+  const pkg = new Package(Buffer.from('{"repository": {"type": "git", "url": "https://github.com/sxzz/obug.git"}}'))
   expect(pkg.repository).matchSnapshot()
 })
 

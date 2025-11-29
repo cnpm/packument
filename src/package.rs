@@ -147,11 +147,17 @@ impl<'a> Package<'a> {
 
     #[napi(getter)]
     pub fn maintainers(&self) -> Option<Vec<Human>> {
-        self.root.get("maintainers").map(|maintainers| {
-            to_array_iter(maintainers.as_raw_str())
-                .flatten()
-                .filter_map(|value| from_str(value.as_raw_str()).ok())
-                .collect()
+        self.root.get("maintainers").and_then(|maintainers| {
+            if maintainers.is_null() {
+                None
+            } else {
+                Some(
+                    to_array_iter(maintainers.as_raw_str())
+                        .flatten()
+                        .filter_map(|value| from_str(value.as_raw_str()).ok())
+                        .collect(),
+                )
+            }
         })
     }
 
@@ -214,11 +220,19 @@ impl<'a> Package<'a> {
     }
 
     fn get_record_by_key(&self, key: &str) -> Option<HashMap<String, String>> {
-        self.root.get(key).map(|value| {
-            to_object_iter(value.as_raw_str())
-                .flatten()
-                .filter_map(|(key, value)| value.as_str().map(|s| (key.to_string(), s.to_string())))
-                .collect()
+        self.root.get(key).and_then(|value| {
+            if value.is_null() {
+                None
+            } else {
+                Some(
+                    to_object_iter(value.as_raw_str())
+                        .flatten()
+                        .filter_map(|(key, value)| {
+                            value.as_str().map(|s| (key.to_string(), s.to_string()))
+                        })
+                        .collect(),
+                )
+            }
         })
     }
 }
