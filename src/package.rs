@@ -127,38 +127,22 @@ impl<'a> Package<'a> {
 
     #[napi(getter)]
     pub fn time(&self) -> Option<HashMap<String, String>> {
-        let time = self.root.get("time")?;
-        let mut out = HashMap::default();
-        for (key, value) in to_object_iter(time.as_raw_str()).flatten() {
-            if let Some(value) = value.as_str() {
-                out.insert(key.to_string(), value.to_string());
-            }
-        }
-        Some(out)
+        self.get_record_by_key("time")
     }
 
     #[napi(getter)]
     pub fn dist_tags(&self) -> Option<HashMap<String, String>> {
-        let dist_tags = self.root.get("dist-tags")?;
-        let mut out = HashMap::default();
-        for (key, value) in to_object_iter(dist_tags.as_raw_str()).flatten() {
-            if let Some(value) = value.as_str() {
-                out.insert(key.to_string(), value.to_string());
-            }
-        }
-        Some(out)
+        self.get_record_by_key("dist-tags")
     }
 
     #[napi(getter)]
     pub fn maintainers(&self) -> Option<Vec<Human>> {
-        let maintainers = self.root.get("maintainers")?;
-        let mut out = Vec::new();
-        for value in to_array_iter(maintainers.as_raw_str()).flatten() {
-            if let Ok(human) = from_str(value.as_raw_str()) {
-                out.push(human);
-            }
-        }
-        Some(out)
+        self.root.get("maintainers").map(|maintainers| {
+            to_array_iter(maintainers.as_raw_str())
+                .flatten()
+                .filter_map(|value| from_str(value.as_raw_str()).ok())
+                .collect()
+        })
     }
 
     #[napi(getter)]
@@ -217,6 +201,15 @@ impl<'a> Package<'a> {
         let offset =
             value.as_raw_str().as_ptr() as usize - self.root.as_raw_str().as_ptr() as usize;
         (offset as u32, (offset + value.as_raw_str().len()) as u32)
+    }
+
+    fn get_record_by_key(&self, key: &str) -> Option<HashMap<String, String>> {
+        self.root.get(key).map(|value| {
+            to_object_iter(value.as_raw_str())
+                .flatten()
+                .filter_map(|(key, value)| value.as_str().map(|s| (key.to_string(), s.to_string())))
+                .collect()
+        })
     }
 }
 
