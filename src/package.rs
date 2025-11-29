@@ -126,6 +126,16 @@ impl<'a> Package<'a> {
     }
 
     #[napi(getter)]
+    pub fn repository(&self) -> Option<Either<String, Repository>> {
+        let repo = self.root.get("repository")?;
+        if let Some(s) = repo.as_str() {
+            Some(Either::A(s.to_string()))
+        } else {
+            from_str(repo.as_raw_str()).ok().map(Either::B)
+        }
+    }
+
+    #[napi(getter)]
     pub fn time(&self) -> Option<HashMap<String, String>> {
         self.get_record_by_key("time")
     }

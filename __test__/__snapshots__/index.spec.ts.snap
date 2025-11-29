@@ -331,3 +331,19 @@ exports[`should get maintainers 1`] = `
   },
 ]
 `;
+
+exports[`should get repository 1`] = `
+{
+  "type": "git",
+  "url": "git+https://github.com/sxzz/obug.git",
+}
+`;
+
+exports[`should get repository 2`] = `"https://github.com/sxzz/obug.git"`;
+
+exports[`should get repository 3`] = `
+{
+  "type": "git",
+  "url": "https://github.com/sxzz/obug.git",
+}
+`;

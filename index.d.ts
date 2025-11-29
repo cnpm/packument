@@ -46,6 +46,7 @@ export declare class Package {
   get description(): string | null
   get readme(): string | null
   get readmePosition(): [number, number] | null
+  get repository(): string | Repository | null
   get time(): Record<string, string> | null
   get distTags(): Record<string, string> | null
   get maintainers(): Array<Human> | null
