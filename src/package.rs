@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
-use sonic_rs::{from_slice, from_str};
+use sonic_rs::{from_slice, from_str, to_array_iter};
 use sonic_rs::{to_object_iter, JsonValueTrait, LazyValue};
 
 /// Package metadata document, sometimes informally called a "packument" or "doc.json".
@@ -126,15 +126,39 @@ impl<'a> Package<'a> {
     }
 
     #[napi(getter)]
-    pub fn time(&self) -> Option<HashMap<String, String>> {
-        let time = self.root.get("time")?;
-        let mut out = HashMap::default();
-        for (key, value) in to_object_iter(time.as_raw_str()).flatten() {
-            if let Some(value) = value.as_str() {
-                out.insert(key.to_string(), value.to_string());
-            }
+    pub fn repository(&self) -> Option<Either<String, Repository>> {
+        let repo = self.root.get("repository")?;
+        if let Some(s) = repo.as_str() {
+            Some(Either::A(s.to_string()))
+        } else {
+            from_str(repo.as_raw_str()).ok().map(Either::B)
         }
-        Some(out)
+    }
+
+    #[napi(getter)]
+    pub fn time(&self) -> Option<HashMap<String, String>> {
+        self.get_record_by_key("time")
+    }
+
+    #[napi(getter)]
+    pub fn dist_tags(&self) -> Option<HashMap<String, String>> {
+        self.get_record_by_key("dist-tags")
+    }
+
+    #[napi(getter)]
+    pub fn maintainers(&self) -> Option<Vec<Human>> {
+        self.root.get("maintainers").and_then(|maintainers| {
+            if maintainers.is_null() {
+                None
+            } else {
+                Some(
+                    to_array_iter(maintainers.as_raw_str())
+                        .flatten()
+                        .filter_map(|value| from_str(value.as_raw_str()).ok())
+                        .collect(),
+                )
+            }
+        })
     }
 
     #[napi(getter)]
@@ -193,6 +217,23 @@ impl<'a> Package<'a> {
         let offset =
             value.as_raw_str().as_ptr() as usize - self.root.as_raw_str().as_ptr() as usize;
         (offset as u32, (offset + value.as_raw_str().len()) as u32)
+    }
+
+    fn get_record_by_key(&self, key: &str) -> Option<HashMap<String, String>> {
+        self.root.get(key).and_then(|value| {
+            if value.is_null() {
+                None
+            } else {
+                Some(
+                    to_object_iter(value.as_raw_str())
+                        .flatten()
+                        .filter_map(|(key, value)| {
+                            value.as_str().map(|s| (key.to_string(), s.to_string()))
+                        })
+                        .collect(),
+                )
+            }
+        })
     }
 }
 
