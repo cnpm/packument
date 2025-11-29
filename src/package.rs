@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
-use sonic_rs::{from_slice, from_str};
+use sonic_rs::{from_slice, from_str, to_array_iter};
 use sonic_rs::{to_object_iter, JsonValueTrait, LazyValue};
 
 /// Package metadata document, sometimes informally called a "packument" or "doc.json".
@@ -132,6 +132,30 @@ impl<'a> Package<'a> {
         for (key, value) in to_object_iter(time.as_raw_str()).flatten() {
             if let Some(value) = value.as_str() {
                 out.insert(key.to_string(), value.to_string());
+            }
+        }
+        Some(out)
+    }
+
+    #[napi(getter)]
+    pub fn dist_tags(&self) -> Option<HashMap<String, String>> {
+        let dist_tags = self.root.get("dist-tags")?;
+        let mut out = HashMap::default();
+        for (key, value) in to_object_iter(dist_tags.as_raw_str()).flatten() {
+            if let Some(value) = value.as_str() {
+                out.insert(key.to_string(), value.to_string());
+            }
+        }
+        Some(out)
+    }
+
+    #[napi(getter)]
+    pub fn maintainers(&self) -> Option<Vec<Human>> {
+        let maintainers = self.root.get("maintainers")?;
+        let mut out = Vec::new();
+        for value in to_array_iter(maintainers.as_raw_str()).flatten() {
+            if let Ok(human) = from_str(value.as_raw_str()) {
+                out.push(human);
             }
         }
         Some(out)

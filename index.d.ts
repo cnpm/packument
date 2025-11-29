@@ -47,6 +47,8 @@ export declare class Package {
   get readme(): string | null
   get readmePosition(): [number, number] | null
   get time(): Record<string, string> | null
+  get distTags(): Record<string, string> | null
+  get maintainers(): Array<Human> | null
   get isUnpublished(): boolean
   get versions(): Record<string, Version>
   getLatestVersion(): Version | null

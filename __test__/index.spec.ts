@@ -62,3 +62,39 @@ test('should get diff versions', () => {
   expect(version).toBe(firstVersionData.version)
   expect(firstVersionData).matchSnapshot()
 })
+
+test('should get dist-tags', () => {
+  const data = fs.readFileSync(path.join(fixtures, 'obug.json'))
+  const pkg = new Package(data)
+  expect(pkg.distTags).matchSnapshot()
+})
+
+test('should get dist-tags with invalid data', () => {
+  let pkg = new Package(Buffer.from('{}'))
+  expect(pkg.distTags).toBeNull()
+  pkg = new Package(Buffer.from('{"dist-tags": null}'))
+  expect(pkg.distTags).toEqual({})
+  pkg = new Package(Buffer.from('{"dist-tags": {}}'))
+  expect(pkg.distTags).toEqual({})
+  pkg = new Package(Buffer.from('{"dist-tags": []}'))
+  expect(pkg.distTags).toEqual({})
+})
+
+test('should get maintainers', () => {
+  const data = fs.readFileSync(path.join(fixtures, 'obug.json'))
+  const pkg = new Package(data)
+  expect(pkg.maintainers).matchSnapshot()
+})
+
+test('should get maintainers with invalid data', () => {
+  let pkg = new Package(Buffer.from('{}'))
+  expect(pkg.maintainers).toBeNull()
+  pkg = new Package(Buffer.from('{"maintainers": null}'))
+  expect(pkg.maintainers).toEqual([])
+  pkg = new Package(Buffer.from('{"maintainers": {"name": "test"}}'))
+  expect(pkg.maintainers).toEqual([])
+  pkg = new Package(Buffer.from('{"maintainers": {}}'))
+  expect(pkg.maintainers).toEqual([])
+  pkg = new Package(Buffer.from('{"maintainers": []}'))
+  expect(pkg.maintainers).toEqual([])
+})

@@ -249,6 +249,13 @@ exports[`should get dist.attestations and dist.provenance 1`] = `
 }
 `;
 
+exports[`should get dist-tags 1`] = `
+{
+  "latest": "2.1.0",
+  "latest-v1": "1.0.2",
+}
+`;
+
 exports[`should get latest version 1`] = `
 {
   "description": "a package manager for JavaScript",
@@ -314,4 +321,13 @@ exports[`should get latest version 1`] = `
   },
   "version": "11.6.2",
 }
+`;
+
+exports[`should get maintainers 1`] = `
+[
+  {
+    "email": "sxzz@sxzz.moe",
+    "name": "sxzz",
+  },
+]
 `;
