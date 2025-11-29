@@ -167,7 +167,9 @@ impl<'a> Package<'a> {
             return false;
         };
         for (key, value) in to_object_iter(time.as_raw_str()).flatten() {
-            if key == "unpublished" && value.is_str() {
+            // {"unpublished": "2022-01-14T12:34:23.941Z"}
+            // {"unpublished": {"time": "2022-01-14T12:34:23.941Z", "versions": ["0.0.1"]}}
+            if key == "unpublished" && (value.is_str() || value.is_object()) {
                 return true;
             }
         }
