@@ -31,6 +31,24 @@ test('create package metadata instance from buffer', () => {
   expect(pkg.getLatestVersion()).matchSnapshot()
 })
 
+test('should detect unpublished package', () => {
+  const data = fs.readFileSync(path.join(fixtures, 'unpublished.json'))
+  let pkg = new Package(data)
+  expect(pkg.isUnpublished).toBe(true)
+  pkg = new Package(Buffer.from('{}'))
+  expect(pkg.isUnpublished).toBe(false)
+  pkg = new Package(Buffer.from('{"time": {}}'))
+  expect(pkg.isUnpublished).toBe(false)
+  pkg = new Package(Buffer.from('{"time": {"unpublished": "2022-01-14T12:34:23.941Z"}}'))
+  expect(pkg.isUnpublished).toBe(true)
+  pkg = new Package(
+    Buffer.from('{"time": {"unpublished": {"time": "2022-01-14T12:34:23.941Z", "versions": ["0.0.1"]}}}'),
+  )
+  expect(pkg.isUnpublished).toBe(true)
+  pkg = new Package(Buffer.from('{"time": {"unpublished": null}}'))
+  expect(pkg.isUnpublished).toBe(false)
+})
+
 test('should throw error when data is not a valid package metadata', () => {
   expect(() => {
     new Package(Buffer.from('invalid'))
