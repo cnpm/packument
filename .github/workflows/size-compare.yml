@@ -45,7 +45,7 @@ jobs:
             ~/.napi-rs
             .cargo-cache
             target/
-          key: x86_64-unknown-linux-gnu-cargo-ubuntu-latest-size-compare
+          key: x86_64-unknown-linux-gnu-cargo-ubuntu-latest-size-compare-${{ hashFiles('**/Cargo.lock') }}
       - name: Install dependencies
         run: yarn install
       - name: Build
@@ -97,7 +97,7 @@ jobs:
             ~/.napi-rs
             .cargo-cache
             target/
-          key: x86_64-unknown-linux-gnu-cargo-ubuntu-latest-size-compare-base
+          key: x86_64-unknown-linux-gnu-cargo-ubuntu-latest-size-compare-base-${{ hashFiles('**/Cargo.lock') }}
       - name: Install dependencies
         run: yarn install
       - name: Build
