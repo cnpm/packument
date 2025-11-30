@@ -11,8 +11,8 @@ crate-type = ["cdylib"]
 [dependencies]
 napi        = "3.0.0"
 napi-derive = "3.0.0"
-serde       = { version = "1.0.228" }
-sonic-rs    = { version = "0.5.6" }
+serde       = { version = "1.0.228", features = ["derive"] }
+sonic-rs    = "0.5.6"
 
 [build-dependencies]
 napi-build = "2"
