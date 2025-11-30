@@ -1,0 +1,242 @@
+name: Size Compare
+permissions:
+  contents: read
+  pull-requests: write
+env:
+  DEBUG: napi:*
+  APP_NAME: packument
+  CARGO_INCREMENTAL: '1'
+on:
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - LICENSE
+      - '**/*.gitignore'
+      - .editorconfig
+      - docs/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-pr:
+    name: Build PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+      - name: Setup node
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
+        with:
+          node-version: 24
+          cache: yarn
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@6d9817901c499d6b02debbb57edb38d33daa680b # stable
+        with:
+          toolchain: stable
+          targets: x86_64-unknown-linux-gnu
+      - name: Cache cargo
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ~/.napi-rs
+            .cargo-cache
+            target/
+          key: x86_64-unknown-linux-gnu-cargo-ubuntu-latest-size-compare-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install dependencies
+        run: yarn install
+      - name: Build
+        run: yarn build --target x86_64-unknown-linux-gnu --use-napi-cross
+      - name: Get file sizes
+        id: pr-size
+        run: |
+          echo "## PR Build Sizes" >> $GITHUB_STEP_SUMMARY
+          for file in *.node; do
+            if [ -f "$file" ]; then
+              size=$(stat -c%s "$file")
+              size_kb=$(echo "scale=2; $size / 1024" | bc)
+              echo "- $file: ${size_kb} KB ($size bytes)" >> $GITHUB_STEP_SUMMARY
+              echo "${file}_size=${size}" >> $GITHUB_OUTPUT
+            fi
+          done
+      - name: Upload PR artifacts
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: pr-bindings
+          path: |
+            ${{ env.APP_NAME }}.*.node
+          if-no-files-found: error
+
+  build-base:
+    name: Build Base
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+      - name: Setup node
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
+        with:
+          node-version: 24
+          cache: yarn
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@6d9817901c499d6b02debbb57edb38d33daa680b # stable
+        with:
+          toolchain: stable
+          targets: x86_64-unknown-linux-gnu
+      - name: Cache cargo
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ~/.napi-rs
+            .cargo-cache
+            target/
+          key: x86_64-unknown-linux-gnu-cargo-ubuntu-latest-size-compare-base-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install dependencies
+        run: yarn install
+      - name: Build
+        run: yarn build --target x86_64-unknown-linux-gnu --use-napi-cross
+      - name: Upload Base artifacts
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: base-bindings
+          path: |
+            ${{ env.APP_NAME }}.*.node
+          if-no-files-found: error
+
+  compare-size:
+    name: Compare Size
+    needs: [build-pr, build-base]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download PR artifacts
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+        with:
+          name: pr-bindings
+          path: pr
+      - name: Download Base artifacts
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+        with:
+          name: base-bindings
+          path: base
+      - name: Compare sizes and create comment
+        id: compare
+        run: |
+          echo "## 📦 napi-rs Build Size Comparison" >> comment.md
+          echo "" >> comment.md
+          echo "| File | Base Size | PR Size | Diff | % |" >> comment.md
+          echo "|:-----|----------:|--------:|-----:|--:|" >> comment.md
+
+          total_base=0
+          total_pr=0
+
+          for pr_file in pr/*.node; do
+            filename=$(basename "$pr_file")
+            base_file="base/$filename"
+
+            pr_size=$(stat -c%s "$pr_file" 2>/dev/null || echo "0")
+
+            if [ -f "$base_file" ]; then
+              base_size=$(stat -c%s "$base_file")
+            else
+              base_size=0
+            fi
+
+            diff=$((pr_size - base_size))
+            total_base=$((total_base + base_size))
+            total_pr=$((total_pr + pr_size))
+
+            # Calculate percentage change
+            if [ "$base_size" -gt 0 ]; then
+              pct=$(echo "scale=2; ($diff * 100) / $base_size" | bc)
+            else
+              pct="N/A"
+            fi
+
+            # Format sizes in KB
+            base_kb=$(echo "scale=2; $base_size / 1024" | bc)
+            pr_kb=$(echo "scale=2; $pr_size / 1024" | bc)
+            diff_kb=$(echo "scale=2; $diff / 1024" | bc)
+
+            # Add emoji based on diff
+            if [ "$diff" -gt 0 ]; then
+              emoji="📈"
+              diff_str="+${diff_kb} KB"
+              pct_str="+${pct}%"
+            elif [ "$diff" -lt 0 ]; then
+              emoji="📉"
+              diff_str="${diff_kb} KB"
+              pct_str="${pct}%"
+            else
+              emoji="✅"
+              diff_str="0 KB"
+              pct_str="0%"
+            fi
+
+            echo "| ${emoji} \`${filename}\` | ${base_kb} KB | ${pr_kb} KB | ${diff_str} | ${pct_str} |" >> comment.md
+          done
+
+          # Check for deleted files in base that are not in PR
+          for base_file in base/*.node; do
+            filename=$(basename "$base_file")
+            pr_file="pr/$filename"
+            if [ ! -f "$pr_file" ]; then
+              base_size=$(stat -c%s "$base_file")
+              base_kb=$(echo "scale=2; $base_size / 1024" | bc)
+              total_base=$((total_base + base_size))
+              echo "| 🗑️ \`${filename}\` (removed) | ${base_kb} KB | - | -${base_kb} KB | -100% |" >> comment.md
+            fi
+          done
+
+          # Add totals
+          total_diff=$((total_pr - total_base))
+          total_base_kb=$(echo "scale=2; $total_base / 1024" | bc)
+          total_pr_kb=$(echo "scale=2; $total_pr / 1024" | bc)
+          total_diff_kb=$(echo "scale=2; $total_diff / 1024" | bc)
+
+          if [ "$total_base" -gt 0 ]; then
+            total_pct=$(echo "scale=2; ($total_diff * 100) / $total_base" | bc)
+          else
+            total_pct="N/A"
+          fi
+
+          if [ "$total_diff" -gt 0 ]; then
+            total_diff_str="+${total_diff_kb} KB"
+            total_pct_str="+${total_pct}%"
+          elif [ "$total_diff" -lt 0 ]; then
+            total_diff_str="${total_diff_kb} KB"
+            total_pct_str="${total_pct}%"
+          else
+            total_diff_str="0 KB"
+            total_pct_str="0%"
+          fi
+
+          echo "" >> comment.md
+          echo "**Total:** ${total_base_kb} KB → ${total_pr_kb} KB (${total_diff_str}, ${total_pct_str})" >> comment.md
+          echo "" >> comment.md
+          echo "_Compared using x86_64-unknown-linux-gnu target_" >> comment.md
+
+          cat comment.md
+          cat comment.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Find existing comment
+        uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '📦 napi-rs Build Size Comparison'
+
+      - name: Create or update comment
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: comment.md
+          edit-mode: replace
