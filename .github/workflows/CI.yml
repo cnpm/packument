@@ -49,6 +49,11 @@ jobs:
         run: cargo fmt -- --check
       - name: Clippy
         run: cargo clippy
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@efd0e93316a9af26e9847b5090b5ab2419befad4 # main
+      - name: Install cargo-shear
+        run: cargo binstall --no-confirm cargo-shear
+      - run: cargo shear # https://github.com/Boshen/cargo-shear#ci
   build:
     strategy:
       fail-fast: false
