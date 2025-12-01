@@ -65,6 +65,8 @@ export interface Bugs {
   url?: string
 }
 
+export declare function detectSetPropertyPosition(data: Uint8Array, paths: Array<string>): SetPropertyPositionResult
+
 export interface DiffResult {
   addedVersions: Array<[string, [number, number]]>
   removedVersions: Array<string>
@@ -130,6 +132,23 @@ export interface PublishConfig {
 export interface Repository {
   type?: string
   url?: string
+}
+
+export declare const enum SetPropertyKind {
+  Add = 'Add',
+  Update = 'Update',
+  /** the parent property is not found, should add the parent property first */
+  ParentNotFound = 'ParentNotFound',
+  /** the parent property is not an object, can't add new property to it, need to remove it first */
+  ParentNotObject = 'ParentNotObject',
+}
+
+export interface SetPropertyPositionResult {
+  kind: SetPropertyKind
+  /** the previous property name if the property is `Add` kind */
+  previous?: string
+  start: number
+  end: number
 }
 
 export interface Signature {

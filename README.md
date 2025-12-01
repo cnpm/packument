@@ -8,6 +8,19 @@
 [![NPM Downloads](https://img.shields.io/npm/dm/@cnpmjs/packument)](https://www.npmjs.com/package/@cnpmjs/packument)
 [![NPM License](https://img.shields.io/npm/l/@cnpmjs/packument)](https://github.com/cnpm/packument/blob/master/LICENSE)
 
+`@cnpmjs/packument` is a package metadata helper for Node.js.
+It provides a way to parse package metadata from buffer and diff versions between local and remote.
+
+Based on [sonic-rs](https://github.com/cloudwego/sonic-rs) to parse JSON efficiently.
+
+## Features
+
+- [x] Parse package metadata from buffer
+- [x] Diff versions between local and remote
+- [x] Extract version metadata using position
+- [ ] Set property without parsing
+- [ ] Add value to Array property without parsing
+
 ## Install
 
 ```bash

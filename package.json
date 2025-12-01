@@ -2,7 +2,6 @@
   "name": "@cnpmjs/packument",
   "version": "1.1.1",
   "description": "Packument helper",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/cnpm/packument.git"
@@ -16,9 +15,18 @@
     "Rust",
     "node-addon",
     "node-addon-api",
-    "packument"
+    "packument",
+    "cnpm"
   ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./js/index.js",
+      "types": "./js/index.d.ts"
+    }
+  },
   "files": [
+    "js",
     "index.d.ts",
     "index.js",
     "browser.js"
@@ -47,8 +55,8 @@
     "artifacts": "napi artifacts",
     "prebench": "yarn build",
     "bench": "node benchmark/bench.ts",
-    "build": "napi build --platform --release",
-    "build:debug": "napi build --platform",
+    "build": "napi build --platform --release --esm && tsc",
+    "build:debug": "napi build --platform --esm && tsc",
     "format": "run-p format:prettier format:rs format:toml",
     "format:prettier": "prettier . -w",
     "format:toml": "taplo format",
