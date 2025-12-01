@@ -140,7 +140,7 @@ export declare const enum SetPropertyKind {
   /** the parent property is not found, should add the parent property first */
   ParentNotFound = 'ParentNotFound',
   /** the parent property is not an object, can't add new property to it, need to remove it first */
-  ParentNotObject = 'ParentNotObject',
+  ParentNotObject = 'ParentNotObject'
 }
 
 export interface SetPropertyPositionResult {
