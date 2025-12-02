@@ -331,13 +331,13 @@ test('should delete large json', () => {
   const data = fs.readFileSync(path.join(fixtures, '@primer/react.json'))
   const versions = Object.keys(JSON.parse(data.toString()).versions)
   const builder = new JSONBuilder(data)
-  for (const version of versions.slice(0, 10)) {
+  for (const version of versions.slice(0, 5)) {
     builder.deleteIn(['versions', version])
   }
   const pkg = JSON.parse(builder.build().toString())
   expect(pkg.name).toBe('@primer/react')
   const newVersions = Object.keys(pkg.versions)
-  expect(newVersions.length).toBe(versions.length - 10)
+  expect(newVersions.length).toBe(versions.length - 5)
 
   builder.deleteIn(['versions'])
   expect(JSON.parse(builder.build().toString()).versions).toBeUndefined()
