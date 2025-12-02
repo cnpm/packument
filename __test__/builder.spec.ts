@@ -320,3 +320,25 @@ test('should delete property with autoDeleteParentIfEmpty option', () => {
     versions: { '1.0.0': { name: 'foo' }, '1.0.1': { name: 'bar' } },
   })
 })
+
+test('should throw error when delete property with invalid paths', () => {
+  const data = Buffer.from(JSON.stringify({ 'dist-tags': { latest: '1.0.1' } }))
+  const builder = new JSONBuilder(data)
+  expect(() => builder.deleteIn([])).toThrow('paths should not be empty array')
+})
+
+test('should delete large json', () => {
+  const data = fs.readFileSync(path.join(fixtures, '@primer/react.json'))
+  const versions = Object.keys(JSON.parse(data.toString()).versions)
+  const builder = new JSONBuilder(data)
+  for (const version of versions.slice(0, 10)) {
+    builder.deleteIn(['versions', version])
+  }
+  const pkg = JSON.parse(builder.build().toString())
+  expect(pkg.name).toBe('@primer/react')
+  const newVersions = Object.keys(pkg.versions)
+  expect(newVersions.length).toBe(versions.length - 10)
+
+  builder.deleteIn(['versions'])
+  expect(JSON.parse(builder.build().toString()).versions).toBeUndefined()
+})

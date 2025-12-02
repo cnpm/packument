@@ -119,19 +119,26 @@ pub fn detect_delete_property_position(
     data: &[u8],
     paths: Vec<String>,
 ) -> Result<DeletePropertyPositionResult> {
-    // find parent
     let mut pointers = pointer![].to_vec();
-    for path in paths[..paths.len() - 1].iter() {
+    for path in &paths {
         pointers.push(path.as_str().into());
     }
-    let delete_property = if let Some(delete_property) = paths.last() {
-        delete_property
-    } else {
-        return Err(napi::Error::new(
-            Status::InvalidArg,
-            "paths should not be empty array",
-        ));
+    match get(data, &pointers) {
+        Ok(_) => {}
+        // fast path, the property is not found
+        Err(e) if e.is_not_found() => {
+            return Ok(DeletePropertyPositionResult {
+                kind: DeletePropertyKind::NotFound,
+                start: 0,
+                end: 0,
+            })
+        }
+        Err(e) => return Err(napi::Error::new(Status::InvalidArg, e.to_string())),
     };
+
+    // find parent
+    pointers.pop();
+    let delete_property = &paths[paths.len() - 1];
     match get(data, &pointers) {
         Ok(parent) => {
             let mut has_previous: bool = false;
