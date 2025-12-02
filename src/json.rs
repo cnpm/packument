@@ -212,6 +212,9 @@ pub fn detect_delete_property_position(
                 //               end
                 let mut new_end = end as usize;
                 loop {
+                    if new_end >= data.len() {
+                        return Err(napi::Error::new(Status::InvalidArg, "Invalid JSON format"));
+                    }
                     if data[new_end] == b',' {
                         new_end += 1;
                         break;
