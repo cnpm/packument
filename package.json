@@ -61,7 +61,7 @@
     "format:prettier": "prettier . -w",
     "format:toml": "taplo format",
     "format:rs": "cargo fmt",
-    "lint": "oxlint .",
+    "lint": "oxlint --type-aware --type-check js",
     "prepublishOnly": "tsc && napi prepublish -t npm",
     "pretest": "yarn build",
     "test": "vitest run",
@@ -81,7 +81,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.1.6",
     "npm-run-all2": "^8.0.4",
-    "oxlint": "^1.14.0",
+    "oxlint": "^1.31.0",
     "prettier": "^3.6.2",
     "tinybench": "^6.0.0",
     "typescript": "^5.9.2",
@@ -108,5 +108,8 @@
     "singleQuote": true,
     "arrowParens": "always"
   },
-  "packageManager": "yarn@4.12.0"
+  "packageManager": "yarn@4.12.0",
+  "dependencies": {
+    "oxlint-tsgolint": "^0.8.3"
+  }
 }

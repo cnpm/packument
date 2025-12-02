@@ -51,7 +51,7 @@ export class JSONBuilder {
     }
 
     if (result.kind !== SetPropertyKind.Add) {
-      throw new Error(`Unexpected set property kind: ${result.kind}`)
+      throw new Error(`Unexpected set property kind: ${String(result.kind)}`)
     }
 
     // add new property
