@@ -152,21 +152,19 @@ pub fn detect_delete_property_position(
                     if has_previous {
                         break;
                     }
+                } else if found_position.is_none() {
+                    // not found the property, set the previous position
+                    // { "foo": "bar", "baz": "qux", "next": "next" }
+                    //  ^           ^
+                    //  start,      end
+                    has_previous = true;
                 } else {
-                    if found_position.is_none() {
-                        // not found the property, set the previous position
-                        // { "foo": "bar", "baz": "qux", "next": "next" }
-                        //  ^           ^
-                        //  start,      end
-                        has_previous = true;
-                    } else {
-                        // found the property, set the next position
-                        // { "baz": "qux", "next": "next" }
-                        //  ^           ^
-                        //  start,   end
-                        has_next = true;
-                        break;
-                    }
+                    // found the property, set the next position
+                    // { "baz": "qux", "next": "next" }
+                    //  ^           ^
+                    //  start,   end
+                    has_next = true;
+                    break;
                 }
                 // next start position is the end position of the current property
                 // { "foo": "bar", "baz": "qux" }
@@ -225,11 +223,11 @@ pub fn detect_delete_property_position(
             //   ^            ^
             //   start        end
             // }
-            return Ok(DeletePropertyPositionResult {
+            Ok(DeletePropertyPositionResult {
                 kind: DeletePropertyKind::FoundAndOnlyOne,
                 start,
                 end,
-            });
+            })
         }
         Err(e) if e.is_not_found() => Ok(DeletePropertyPositionResult {
             kind: DeletePropertyKind::NotFound,
