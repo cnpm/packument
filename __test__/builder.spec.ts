@@ -183,5 +183,9 @@ test('should work with large json', () => {
     },
   }
   builder.setIn(['versions', '10000000.0.0'], version)
-  expect(JSON.parse(builder.build().toString()).versions['10000000.0.0']).toEqual(version)
+  const pkg = JSON.parse(builder.build().toString())
+  expect(pkg.versions['10000000.0.0']).toEqual(version)
+  expect(pkg.name).toBe('@primer/react')
+  // latest version still exists
+  expect(pkg.versions[pkg['dist-tags'].latest]).toMatchSnapshot()
 })
