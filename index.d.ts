@@ -65,6 +65,26 @@ export interface Bugs {
   url?: string
 }
 
+export declare const enum DeletePropertyKind {
+  /** only one property in the object */
+  FoundAndOnlyOne = 'FoundAndOnlyOne',
+  /** found at the start of the object */
+  FoundAtStart = 'FoundAtStart',
+  /** found at the middle of the object */
+  FoundAtMiddle = 'FoundAtMiddle',
+  NotFound = 'NotFound'
+}
+
+export interface DeletePropertyPositionResult {
+  kind: DeletePropertyKind
+  start: number
+  end: number
+}
+
+export declare function detectDeletePropertyPosition(data: Uint8Array, paths: Array<string>): DeletePropertyPositionResult
+
+export declare function detectSetPropertyPosition(data: Uint8Array, paths: Array<string>): SetPropertyPositionResult
+
 export interface DiffResult {
   addedVersions: Array<[string, [number, number]]>
   removedVersions: Array<string>
@@ -130,6 +150,26 @@ export interface PublishConfig {
 export interface Repository {
   type?: string
   url?: string
+}
+
+export declare const enum SetPropertyKind {
+  Add = 'Add',
+  Update = 'Update',
+  /** the parent property is not found, should add the parent property first */
+  ParentNotFound = 'ParentNotFound',
+  /** the parent property is not an object, can't add new property to it, need to remove it first */
+  ParentNotObject = 'ParentNotObject'
+}
+
+export interface SetPropertyPositionResult {
+  kind: SetPropertyKind
+  /**
+   * the previous property name if the property is `Add` kind
+   * if the parent object don't have any property, the previous property name is `None`
+   */
+  previous?: string
+  start: number
+  end: number
 }
 
 export interface Signature {

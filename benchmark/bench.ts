@@ -4,7 +4,7 @@ import path from 'node:path'
 import { Bench } from 'tinybench'
 
 import { Package } from '../index.js'
-import { runMemoryBenchmarks } from './memory_usage.ts'
+import { JSONBuilder } from '../js/builder.js'
 
 const fixtures = path.join(import.meta.dirname, '../__test__/fixtures')
 const smallData = fs.readFileSync(path.join(fixtures, 'a.json'))
@@ -165,6 +165,41 @@ function SonicJSONParseReadmeJSONBufferWithPosition(data: Buffer): Buffer {
   return data.subarray(readmePosition![0], readmePosition![1])
 }
 
+const version = {
+  name: '@primer/react',
+  version: '10000000.0.0',
+  dist: {
+    shasum: '1234567890',
+    tarball: 'https://registry.npmjs.org/@primer/react/-/react-10000000.0.0.tgz',
+    fileCount: 100,
+    integrity: 'sha512-1234567890',
+  },
+  attestations: {
+    url: 'https://registry.npmjs.org/-/npm/v1/attestations/@primer/react@10000000.0.0',
+    provenance: { predicateType: 'https://slsa.dev/provenance/v1' },
+  },
+  unpackedSize: 10000000,
+  signatures: [
+    {
+      sig: '1234567890',
+      keyid: '1234567890',
+    },
+  ],
+}
+
+function addVersionWithJSONParse(data: Buffer): Uint8Array {
+  // @ts-expect-error ignore the type error
+  const pkg = JSON.parse(data)
+  pkg.versions['10000000.0.0'] = version
+  return Buffer.from(JSON.stringify(pkg))
+}
+
+function addVersionWithSonicJSONParse(data: Buffer): Uint8Array {
+  const builder = new JSONBuilder(data)
+  builder.setIn(['versions', '10000000.0.0'], version)
+  return builder.build()
+}
+
 // console.log(
 //   'big readme package: %o, %o, %o, %o',
 //   JSONParseReadme(bigReadmeData).length,
@@ -226,25 +261,21 @@ b.add('sonic-rs big readme JSON buffer with position (229KB, 64KB readme)', () =
   SonicJSONParseReadmeJSONBufferWithPosition(bigReadmeData)
 })
 
+b.add('JSONParse large data add version (22MB)', () => {
+  addVersionWithJSONParse(largeData)
+})
+b.add('sonic-rs large data add version (22MB)', () => {
+  addVersionWithSonicJSONParse(largeData)
+})
+
+b.add('JSONParse super large data add version (89M)', () => {
+  addVersionWithJSONParse(superLargeData)
+})
+b.add('sonic-rs super large data add version (89M)', () => {
+  addVersionWithSonicJSONParse(superLargeData)
+})
+
 await b.run()
 
 console.table(b.table())
 // #endregion
-
-const script = path.join(import.meta.dirname, 'get_description.ts')
-const benchmarks = [
-  { parser: 'JSONParse', size: '22M', file: 'npm.json' },
-  { parser: 'JSONParse', size: '89M', file: '@primer/react.json' },
-  { parser: 'SonicJSONParse', size: '22M', file: 'npm.json' },
-  { parser: 'SonicJSONParse', size: '89M', file: '@primer/react.json' },
-]
-
-const runner = process.version.startsWith('v20.') ? 'npx tsx' : 'node'
-
-await runMemoryBenchmarks(
-  benchmarks.map(({ parser, size, file }) => ({
-    name: `${parser} description (${size})`,
-    command: `${runner} ${script} ${parser} ${file}`,
-    prepare: '',
-  })),
-)

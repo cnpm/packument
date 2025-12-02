@@ -8,6 +8,20 @@
 [![NPM Downloads](https://img.shields.io/npm/dm/@cnpmjs/packument)](https://www.npmjs.com/package/@cnpmjs/packument)
 [![NPM License](https://img.shields.io/npm/l/@cnpmjs/packument)](https://github.com/cnpm/packument/blob/master/LICENSE)
 
+`@cnpmjs/packument` is a package metadata helper for Node.js.
+It provides a way to parse package metadata from buffer and diff versions between local and remote.
+
+Based on [sonic-rs](https://github.com/cloudwego/sonic-rs) to parse JSON efficiently.
+
+## Features
+
+- [x] Parse package metadata from buffer
+- [x] Diff versions between local and remote
+- [x] Extract version metadata using position
+- [x] Set property without parsing
+- [x] Delete property without parsing
+- [ ] Add value to Array property without parsing
+
 ## Install
 
 ```bash
@@ -135,29 +149,39 @@ Memory Usage:
 ┌─────────┬──────────────────────────────────────────────────────────────────────┬─────────────────────┬────────────────────────┬────────────────────────┬────────────────────────┬─────────┐
 │ (index) │ Task name                                                            │ Latency avg (ns)    │ Latency med (ns)       │ Throughput avg (ops/s) │ Throughput med (ops/s) │ Samples │
 ├─────────┼──────────────────────────────────────────────────────────────────────┼─────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┼─────────┤
-│ 0       │ 'JSONParse small data readme string (117KB)'                         │ '248949 ± 0.99%'    │ '238125 ± 8542.0'      │ '4146 ± 0.33%'         │ '4199 ± 151'           │ 4017    │
-│ 1       │ 'sonic-rs small data readme string (117KB)'                          │ '96073 ± 0.29%'     │ '91542 ± 1167.0'       │ '10498 ± 0.14%'        │ '10924 ± 141'          │ 10409   │
-│ 2       │ 'sonic-rs small data readme string with position (117KB)'            │ '106362 ± 0.33%'    │ '101667 ± 3125.0'      │ '9514 ± 0.17%'         │ '9836 ± 312'           │ 9402    │
-│ 3       │ 'sonic-rs small data readme JSON buffer with position (117KB)'       │ '80189 ± 0.11%'     │ '77417 ± 500.00'       │ '12514 ± 0.10%'        │ '12917 ± 84'           │ 12471   │
-│ 4       │ 'JSONParse large data readme string (22MB)'                          │ '74725439 ± 5.11%'  │ '65167479 ± 2361458'   │ '14 ± 4.53%'           │ '15 ± 1'               │ 64      │
-│ 5       │ 'sonic-rs large data readme string (22MB)'                           │ '14298166 ± 0.70%'  │ '14189291 ± 172062'    │ '70 ± 0.66%'           │ '70 ± 1'               │ 70      │
-│ 6       │ 'sonic-rs large data readme string with position (22MB)'             │ '14494829 ± 1.09%'  │ '14322083 ± 302250'    │ '69 ± 1.01%'           │ '70 ± 1'               │ 70      │
-│ 7       │ 'sonic-rs large data readme JSON buffer with position (22MB)'        │ '14345457 ± 0.73%'  │ '14255708 ± 186354'    │ '70 ± 0.70%'           │ '70 ± 1'               │ 70      │
-│ 8       │ 'JSONParse super large data readme string (89M)'                     │ '161558691 ± 2.89%' │ '168895375 ± 15843625' │ '6 ± 2.65%'            │ '6 ± 1'                │ 64      │
-│ 9       │ 'sonic-rs super large data readme string (89M)'                      │ '51225944 ± 0.52%'  │ '51134480 ± 577354'    │ '20 ± 0.50%'           │ '20 ± 0'               │ 64      │
-│ 10      │ 'sonic-rs super large data readme string with position (89M)'        │ '50900172 ± 0.48%'  │ '50671208 ± 589959'    │ '20 ± 0.47%'           │ '20 ± 0'               │ 64      │
-│ 11      │ 'sonic-rs super large data readme JSON buffer with position (89M)'   │ '51286851 ± 0.50%'  │ '51228125 ± 562354'    │ '20 ± 0.49%'           │ '20 ± 0'               │ 64      │
-│ 12      │ 'JSONParse big readme string (229KB, 64KB readme)'                   │ '320480 ± 0.93%'    │ '308959 ± 9709.0'      │ '3201 ± 0.36%'         │ '3237 ± 102'           │ 3121    │
-│ 13      │ 'sonic-rs big readme string (229KB, 64KB readme)'                    │ '147998 ± 0.26%'    │ '148125 ± 5292.0'      │ '6799 ± 0.15%'         │ '6751 ± 244'           │ 6757    │
-│ 14      │ 'sonic-rs big readme string with position (229KB, 64KB readme)'      │ '172298 ± 0.29%'    │ '169063 ± 8354.5'      │ '5849 ± 0.19%'         │ '5915 ± 294'           │ 5804    │
-│ 15      │ 'sonic-rs big readme JSON buffer with position (229KB, 64KB readme)' │ '125021 ± 0.14%'    │ '124000 ± 6459.0'      │ '8027 ± 0.13%'         │ '8065 ± 422'           │ 7999    │
+│ 0       │ 'JSONParse small data readme string (117KB)'                         │ '259742 ± 0.52%'    │ '247230 ± 8917.0'      │ '3913 ± 0.34%'         │ '4045 ± 149'           │ 3850    │
+│ 1       │ 'sonic-rs small data readme string (117KB)'                          │ '98949 ± 0.29%'     │ '98417 ± 4999.0'       │ '10189 ± 0.14%'        │ '10161 ± 515'          │ 10107   │
+│ 2       │ 'sonic-rs small data readme string with position (117KB)'            │ '107065 ± 0.22%'    │ '105917 ± 5249.0'      │ '9404 ± 0.14%'         │ '9441 ± 456'           │ 9341    │
+│ 3       │ 'sonic-rs small data readme JSON buffer with position (117KB)'       │ '86159 ± 0.49%'     │ '87666 ± 1084.0'       │ '11706 ± 0.12%'        │ '11407 ± 143'          │ 11607   │
+│ 4       │ 'JSONParse large data readme string (22MB)'                          │ '76834607 ± 5.25%'  │ '66358500 ± 2121250'   │ '14 ± 4.62%'           │ '15 ± 0'               │ 64      │
+│ 5       │ 'sonic-rs large data readme string (22MB)'                           │ '14920809 ± 0.71%'  │ '14854833 ± 258396'    │ '67 ± 0.69%'           │ '67 ± 1'               │ 68      │
+│ 6       │ 'sonic-rs large data readme string with position (22MB)'             │ '15473730 ± 0.91%'  │ '15392875 ± 346958'    │ '65 ± 0.83%'           │ '65 ± 1'               │ 65      │
+│ 7       │ 'sonic-rs large data readme JSON buffer with position (22MB)'        │ '15280011 ± 0.88%'  │ '15226563 ± 385272'    │ '66 ± 0.88%'           │ '66 ± 2'               │ 66      │
+│ 8       │ 'JSONParse super large data readme string (89M)'                     │ '166472681 ± 2.56%' │ '159452958 ± 12719146' │ '6 ± 2.52%'            │ '6 ± 1'                │ 64      │
+│ 9       │ 'sonic-rs super large data readme string (89M)'                      │ '55477295 ± 0.58%'  │ '55223313 ± 914063'    │ '18 ± 0.57%'           │ '18 ± 0'               │ 64      │
+│ 10      │ 'sonic-rs super large data readme string with position (89M)'        │ '54809802 ± 0.53%'  │ '54409938 ± 633917'    │ '18 ± 0.52%'           │ '18 ± 0'               │ 64      │
+│ 11      │ 'sonic-rs super large data readme JSON buffer with position (89M)'   │ '54798735 ± 0.65%'  │ '54398208 ± 554979'    │ '18 ± 0.61%'           │ '18 ± 0'               │ 64      │
+│ 12      │ 'JSONParse big readme string (229KB, 64KB readme)'                   │ '332583 ± 1.01%'    │ '318792 ± 6709.0'      │ '3091 ± 0.36%'         │ '3137 ± 67'            │ 3007    │
+│ 13      │ 'sonic-rs big readme string (229KB, 64KB readme)'                    │ '154914 ± 0.66%'    │ '152417 ± 2875.0'      │ '6549 ± 0.20%'         │ '6561 ± 123'           │ 6456    │
+│ 14      │ 'sonic-rs big readme string with position (229KB, 64KB readme)'      │ '185652 ± 0.74%'    │ '180625 ± 5834.0'      │ '5499 ± 0.27%'         │ '5536 ± 179'           │ 5387    │
+│ 15      │ 'sonic-rs big readme JSON buffer with position (229KB, 64KB readme)' │ '134273 ± 0.60%'    │ '133083 ± 1666.0'      │ '7521 ± 0.16%'         │ '7514 ± 93'            │ 7448    │
+│ 16      │ 'JSONParse large data add version (22MB)'                            │ '141596438 ± 3.18%' │ '130096250 ± 3036583'  │ '7 ± 2.94%'            │ '8 ± 0'                │ 64      │
+│ 17      │ 'sonic-rs large data add version (22MB)'                             │ '47422600 ± 0.46%'  │ '47358021 ± 578896'    │ '21 ± 0.46%'           │ '21 ± 0'               │ 64      │
+│ 18      │ 'JSONParse super large data add version (89M)'                       │ '395517850 ± 0.63%' │ '393929666 ± 6207959'  │ '3 ± 0.61%'            │ '3 ± 0'                │ 64      │
+│ 19      │ 'sonic-rs super large data add version (89M)'                        │ '170208911 ± 0.46%' │ '170423042 ± 2301708'  │ '6 ± 0.46%'            │ '6 ± 0'                │ 64      │
 └─────────┴──────────────────────────────────────────────────────────────────────┴─────────────────────┴────────────────────────┴────────────────────────┴────────────────────────┴─────────┘
 
 Memory Usage:
-  JSONParse description (22M): 397.4 MB (min: 397.2 MB, max: 397.9 MB)
-  JSONParse description (89M): 583.3 MB (min: 582.6 MB, max: 584.2 MB)
-  SonicJSONParse description (22M): 88.4 MB (min: 88.2 MB, max: 88.9 MB)
-  SonicJSONParse description (89M): 155.4 MB (min: 155.2 MB, max: 155.5 MB)
+  JSONParse description (22M): 343.4 MB (min: 343.2 MB, max: 343.8 MB)
+  JSONParse description (89M): 577.1 MB (min: 576.5 MB, max: 577.7 MB)
+  SonicJSONParse description (22M): 81.3 MB (min: 81.1 MB, max: 81.8 MB)
+  SonicJSONParse description (89M): 148.8 MB (min: 148.5 MB, max: 149.2 MB)
+
+Memory Usage:
+  JSONParse add version (22M): 463.9 MB (min: 462.3 MB, max: 466.6 MB)
+  JSONParse add version (89M): 726.5 MB (min: 723.6 MB, max: 730.4 MB)
+  SonicJSONParse add version (22M): 133.1 MB (min: 128.5 MB, max: 151.0 MB)
+  SonicJSONParse add version (89M): 417.8 MB (min: 417.8 MB, max: 417.9 MB)
 ```
 
 ### Node.js 20.19.5 Result

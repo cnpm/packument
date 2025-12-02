@@ -20,7 +20,7 @@ function SonicJSONParse(data: Buffer): string {
 
 const parse = method === 'SonicJSONParse' ? SonicJSONParse : JSONParse
 
-console.log(`${method} description (${filename}): %o`, parse(largeData))
+// console.log(`${method} description (${filename}): %o`, parse(largeData))
 for (let i = 0; i < 5; i++) {
   parse(largeData)
 }

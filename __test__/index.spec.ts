@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { test, expect } from 'vitest'
 
-import { Package } from '../index'
+import { Package } from '../'
 
 const fixtures = path.join(import.meta.dirname, 'fixtures')
 

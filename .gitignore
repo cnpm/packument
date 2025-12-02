@@ -127,3 +127,6 @@ dist
 !.yarn/sdks
 !.yarn/versions
 /npm
+
+js/*.d.ts
+js/*.js

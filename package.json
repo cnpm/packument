@@ -2,7 +2,6 @@
   "name": "@cnpmjs/packument",
   "version": "1.1.1",
   "description": "Packument helper",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/cnpm/packument.git"
@@ -16,9 +15,18 @@
     "Rust",
     "node-addon",
     "node-addon-api",
-    "packument"
+    "packument",
+    "cnpm"
   ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./js/index.js",
+      "types": "./js/index.d.ts"
+    }
+  },
   "files": [
+    "js",
     "index.d.ts",
     "index.js",
     "browser.js"
@@ -46,15 +54,15 @@
   "scripts": {
     "artifacts": "napi artifacts",
     "prebench": "yarn build",
-    "bench": "node benchmark/bench.ts",
-    "build": "napi build --platform --release",
-    "build:debug": "napi build --platform",
+    "bench": "node benchmark/bench.ts && node benchmark/bench_memory.ts",
+    "build": "tsc && napi build --platform --release --esm",
+    "build:debug": "tsc && napi build --platform --esm",
     "format": "run-p format:prettier format:rs format:toml",
     "format:prettier": "prettier . -w",
     "format:toml": "taplo format",
     "format:rs": "cargo fmt",
-    "lint": "oxlint .",
-    "prepublishOnly": "napi prepublish -t npm",
+    "lint": "oxlint --type-aware --type-check js",
+    "prepublishOnly": "tsc && napi prepublish -t npm",
     "pretest": "yarn build",
     "test": "vitest run",
     "preversion": "napi build --platform && git add .",
@@ -73,7 +81,8 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.1.6",
     "npm-run-all2": "^8.0.4",
-    "oxlint": "^1.14.0",
+    "oxlint": "^1.31.0",
+    "oxlint-tsgolint": "^0.8.3",
     "prettier": "^3.6.2",
     "tinybench": "^6.0.0",
     "typescript": "^5.9.2",
