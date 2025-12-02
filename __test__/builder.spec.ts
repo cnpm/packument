@@ -1,8 +1,9 @@
 import path from 'node:path'
+import fs from 'node:fs'
+
 import { test, expect } from 'vitest'
 
 import { JSONBuilder } from '../js/index.js'
-import fs from 'node:fs'
 
 const fixtures = path.join(import.meta.dirname, 'fixtures')
 

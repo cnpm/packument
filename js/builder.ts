@@ -14,7 +14,7 @@ export class JSONBuilder {
       throw new TypeError('paths should not be empty array')
     }
     const result = detectSetPropertyPosition(this.#data, paths)
-    console.log(paths, result)
+    // console.log(paths, result)
     if (result.kind === SetPropertyKind.ParentNotObject) {
       throw new Error(
         `Parent property is not an object, can't add new property to it, need to remove it first: ${paths.slice(0, -1).join('.')}`,
@@ -30,7 +30,11 @@ export class JSONBuilder {
 
     if (result.kind === SetPropertyKind.Update) {
       const updateBuffer = Buffer.from(JSON.stringify(value))
-      this.#data = Buffer.concat([this.#data.subarray(0, result.start), updateBuffer, this.#data.subarray(result.end)])
+      this.#data = this.#concatBuffers([
+        this.#data.subarray(0, result.start),
+        updateBuffer,
+        this.#data.subarray(result.end),
+      ])
       return this
     }
 
@@ -44,7 +48,7 @@ export class JSONBuilder {
     if (result.previous) {
       // has previous property, add the new property after the previous property
       // add "," after the previous property
-      this.#data = Buffer.concat([
+      this.#data = this.#concatBuffers([
         this.#data.subarray(0, result.start),
         Buffer.from(','),
         addBuffer,
@@ -52,7 +56,11 @@ export class JSONBuilder {
       ])
     } else {
       // no previous property, add the new property to the end of the object
-      this.#data = Buffer.concat([this.#data.subarray(0, result.start), addBuffer, this.#data.subarray(result.start)])
+      this.#data = this.#concatBuffers([
+        this.#data.subarray(0, result.start),
+        addBuffer,
+        this.#data.subarray(result.start),
+      ])
     }
     return this
   }
@@ -68,5 +76,9 @@ export class JSONBuilder {
 
   build(): Uint8Array {
     return this.#data
+  }
+
+  #concatBuffers(buffers: Buffer[]): Buffer {
+    return Buffer.concat(buffers)
   }
 }

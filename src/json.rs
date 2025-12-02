@@ -33,6 +33,7 @@ pub fn detect_set_property_position(
     for path in paths {
         pointers.push(path.as_str().into());
     }
+    // use get_unchecked will be faster than get, but it will panic if json format is invalid
     match get(data, &pointers) {
         Ok(value) => {
             // update existing property

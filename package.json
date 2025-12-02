@@ -54,7 +54,7 @@
   "scripts": {
     "artifacts": "napi artifacts",
     "prebench": "yarn build",
-    "bench": "node benchmark/bench.ts",
+    "bench": "node benchmark/bench.ts && node benchmark/bench_memory.ts",
     "build": "tsc && napi build --platform --release --esm",
     "build:debug": "tsc && napi build --platform --esm",
     "format": "run-p format:prettier format:rs format:toml",

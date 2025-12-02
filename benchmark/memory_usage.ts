@@ -4,7 +4,7 @@ import { execSync } from 'node:child_process'
 
 // Constants
 const KB_TO_MB = 1024
-const MEMORY_BENCHMARK_RUNS = 10
+const MEMORY_BENCHMARK_RUNS = 5
 
 // Detect GNU time binary
 let gnuTimeBinary = ''
@@ -107,9 +107,7 @@ export async function runMemoryBenchmarks(benchmarks: Benchmark[]) {
 
   // Print results
   for (const result of results) {
-    console.log(
-      `  ${result.name}: ${result.mean} MB (min: ${result.min} MB, max: ${result.max} MB)`,
-    )
+    console.log(`  ${result.name}: ${result.mean} MB (min: ${result.min} MB, max: ${result.max} MB)`)
   }
 
   return results
