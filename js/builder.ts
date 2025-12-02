@@ -95,7 +95,7 @@ export class JSONBuilder {
     return this
   }
 
-  build(): Uint8Array {
+  build(): Buffer {
     return this.#data
   }
 
