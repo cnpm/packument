@@ -37,13 +37,18 @@ import { Package } from '@cnpmjs/packument'
 import { readFileSync } from 'fs'
 
 // Load package metadata from buffer
-const buffer = readFileSync('path/to/package.json')
+const buffer = readFileSync('path/to/packument.json')
 const pkg = new Package(buffer)
 
 // Get package information
 console.log(pkg.name) // Package name
 console.log(pkg.description) // Package description
 console.log(pkg.readme) // Package readme
+console.log(pkg.distTags) // { latest: '1.0.0', next: '2.0.0-beta.1' }
+console.log(pkg.maintainers) // [{ name: 'foo', email: 'foo@example.com' }]
+console.log(pkg.repository) // { type: 'git', url: 'https://github.com/...' }
+console.log(pkg.time) // { created: '2020-01-01T00:00:00.000Z', modified: '2020-01-02T00:00:00.000Z', '1.0.0': '...' }
+console.log(pkg.isUnpublished) // false
 
 // Get latest version
 const latestVersion = pkg.getLatestVersion()
@@ -64,7 +69,7 @@ import { readFileSync } from 'fs'
 
 // Prepare local and remote package data
 const localVersions = ['1.0.0', '1.0.1', '1.0.2']
-const remoteBuffer = readFileSync('path/to/remote-package.json')
+const remoteBuffer = readFileSync('path/to/remote-packument.json')
 
 // Create remote package instance
 const remotePkg = new Package(remoteBuffer)
@@ -105,6 +110,49 @@ for (const [version, [start, end]] of diff.addedVersions) {
 ```
 
 This approach is much more efficient than parsing the entire package JSON when you only need specific version metadata.
+
+### Modify JSON Without Full Parsing (JSONBuilder)
+
+The `JSONBuilder` class allows you to set or delete properties in a JSON buffer without parsing the entire document. This is useful for modifying large packument files efficiently.
+
+```javascript
+import { JSONBuilder } from '@cnpmjs/packument'
+import { readFileSync, writeFileSync } from 'fs'
+
+const buffer = readFileSync('path/to/packument.json')
+const builder = new JSONBuilder(buffer)
+
+// Set a property using path array
+builder.setIn(['dist-tags', 'latest'], '2.0.0')
+
+// Add a new version
+builder.setIn(['versions', '2.0.0'], {
+  name: 'my-package',
+  version: '2.0.0',
+  dist: {
+    shasum: 'abc123',
+    tarball: 'https://registry.npmjs.org/my-package/-/my-package-2.0.0.tgz',
+  },
+})
+
+// Delete a property
+builder.deleteIn(['versions', '1.0.0-deprecated'])
+
+// Delete with auto-cleanup of empty parent
+builder.deleteIn(['versions', '0.0.1'], { autoDeleteParentIfEmpty: true })
+
+// Get the modified buffer
+const modifiedBuffer = builder.build()
+writeFileSync('path/to/packument.json', modifiedBuffer)
+```
+
+Supported value types for `setIn`:
+
+- `string`
+- `number`
+- `boolean`
+- `Date` (serialized to ISO string)
+- `object` (serialized to JSON)
 
 ## Benchmark
 
