@@ -57,5 +57,5 @@ get the value position of "name" => [9, 13], then replace the value to "Jane" ac
                                                              ^
                                                              |
                                                              62
-don't have the position of "email", so we need to add the property to the end of the buffer.
+we don't have the position of "email", so we need to add the property to the end of the buffer.
 ```
