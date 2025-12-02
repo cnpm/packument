@@ -92,4 +92,62 @@ test('should set value work with string, number, boolean, date, object', () => {
   expect(builder.build().toString()).toBe(
     '{"info":{"email":"john@example.com","age":31,"isAdmin":false,"createdAt":"2025-01-01T00:00:00.000Z","address":{"city":"New York","no":101}}}',
   )
+  expect(JSON.parse(builder.build().toString())).toEqual({
+    info: {
+      email: 'john@example.com',
+      age: 31,
+      isAdmin: false,
+      createdAt: '2025-01-01T00:00:00.000Z',
+      address: { city: 'New York', no: 101 },
+    },
+  })
+})
+
+test('should work with emoji', () => {
+  const data = Buffer.from('{}')
+  const builder = new JSONBuilder(data)
+  builder.setIn(['info', 'name'], '👨‍👩‍👧‍👦')
+  expect(builder.build().toString()).toBe('{"info":{"name":"👨‍👩‍👧‍👦"}}')
+  builder.setIn(['😄'], true)
+  expect(builder.build().toString()).toBe('{"info":{"name":"👨‍👩‍👧‍👦"},"😄":true}')
+  expect(JSON.parse(builder.build().toString())).toEqual({
+    info: { name: '👨‍👩‍👧‍👦' },
+    '😄': true,
+  })
+
+  // update emoji key
+  builder.setIn(['😄'], '😄')
+  expect(builder.build().toString()).toBe('{"info":{"name":"👨‍👩‍👧‍👦"},"😄":"😄"}')
+  expect(JSON.parse(builder.build().toString())).toEqual({
+    info: { name: '👨‍👩‍👧‍👦' },
+    '😄': '😄',
+  })
+})
+
+test('should work with double and single quotes', () => {
+  const data = Buffer.from('{}')
+  const builder = new JSONBuilder(data)
+  builder.setIn(['info', 'name'], '"John"')
+  expect(builder.build().toString()).toBe('{"info":{"name":"\\"John\\""}}')
+  expect(JSON.parse(builder.build().toString())).toEqual({
+    info: { name: '"John"' },
+  })
+  builder.setIn(['info', '"foo"'], 'bar')
+  expect(builder.build().toString()).toBe('{"info":{"name":"\\"John\\"","\\"foo\\"":"bar"}}')
+  expect(JSON.parse(builder.build().toString())).toEqual({
+    info: { name: '"John"', '"foo"': 'bar' },
+  })
+
+  // update double quotes key
+  builder.setIn(['info', '"foo"'], 'bar2 👌')
+  expect(builder.build().toString()).toBe('{"info":{"name":"\\"John\\"","\\"foo\\"":"bar2 👌"}}')
+  expect(JSON.parse(builder.build().toString())).toEqual({
+    info: { name: '"John"', '"foo"': 'bar2 👌' },
+  })
+
+  builder.setIn(['info', "foo'bar"], 'baz')
+  expect(builder.build().toString()).toBe('{"info":{"name":"\\"John\\"","\\"foo\\"":"bar2 👌","foo\'bar":"baz"}}')
+  expect(JSON.parse(builder.build().toString())).toEqual({
+    info: { name: '"John"', '"foo"': 'bar2 👌', "foo'bar": 'baz' },
+  })
 })

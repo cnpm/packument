@@ -40,7 +40,7 @@ export class JSONBuilder {
 
     // add new property
     const property = paths[paths.length - 1]
-    const addBuffer = Buffer.from(`"${property}":${JSON.stringify(value)}`)
+    const addBuffer = Buffer.from(`${JSON.stringify(property)}:${JSON.stringify(value)}`)
     if (result.previous) {
       // has previous property, add the new property after the previous property
       // add "," after the previous property
