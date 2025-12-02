@@ -271,3 +271,27 @@ test('should delete emoji property', () => {
   builder.deleteIn(['😄2'])
   expect(builder.build().toString()).toBe(`{}`)
 })
+
+test('should delete property with autoDeleteParentIfEmpty option', () => {
+  const data = Buffer.from(JSON.stringify({ versions: { '1.0.0': { name: 'foo' } } }))
+  const builder = new JSONBuilder(data)
+  builder.deleteIn(['versions', '1.0.0'], { autoDeleteParentIfEmpty: true })
+  expect(builder.build().toString()).toBe(`{}`)
+
+  const data2 = Buffer.from(
+    JSON.stringify({
+      'dist-tags': { latest: '1.0.1' },
+      versions: { '1.0.0': { name: 'foo' }, '1.0.1': { name: 'bar' } },
+    }),
+  )
+  const builder2 = new JSONBuilder(data2)
+  builder2.deleteIn(['versions', '1.0.0'], { autoDeleteParentIfEmpty: true })
+  expect(JSON.parse(builder2.build().toString())).toEqual({
+    'dist-tags': { latest: '1.0.1' },
+    versions: { '1.0.1': { name: 'bar' } },
+  })
+  builder2.deleteIn(['versions', '1.0.1'], { autoDeleteParentIfEmpty: true })
+  expect(JSON.parse(builder2.build().toString())).toEqual({ 'dist-tags': { latest: '1.0.1' } })
+  builder2.deleteIn(['dist-tags', 'latest'], { autoDeleteParentIfEmpty: true })
+  expect(JSON.parse(builder2.build().toString())).toEqual({})
+})

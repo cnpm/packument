@@ -7,6 +7,14 @@ import {
 
 export type SetValue = string | number | boolean | Date | object
 
+export interface DeleteOptions {
+  /**
+   * If the parent property is empty after deleting the property, delete the parent property too
+   * @default false
+   */
+  autoDeleteParentIfEmpty?: boolean
+}
+
 export class JSONBuilder {
   #data: Buffer
 
@@ -69,7 +77,7 @@ export class JSONBuilder {
     return this
   }
 
-  deleteIn(paths: string[]): this {
+  deleteIn(paths: string[], options?: DeleteOptions): this {
     if (paths.length === 0) {
       throw new TypeError('paths should not be empty array')
     }
@@ -77,6 +85,10 @@ export class JSONBuilder {
     if (result.kind === DeletePropertyKind.NotFound) {
       // do nothing
       return this
+    }
+    if (result.kind === DeletePropertyKind.FoundAndOnlyOne && paths.length > 1 && options?.autoDeleteParentIfEmpty) {
+      // delete the parent property if it is empty
+      return this.deleteIn(paths.slice(0, -1), options)
     }
     // found, delete the property
     this.#data = this.#concatBuffers([this.#data.subarray(0, result.start), this.#data.subarray(result.end)])

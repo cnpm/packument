@@ -170,8 +170,8 @@ pub fn detect_delete_property_position(
                 }
                 // next start position is the end position of the current property
                 // { "foo": "bar", "baz": "qux" }
-                //              ^
-                //              start
+                //               ^
+                //               start
                 start = end;
             }
             let (start, end) = if let Some(found_position) = found_position {
