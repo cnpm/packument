@@ -1,4 +1,9 @@
-import { detectSetPropertyPosition, SetPropertyKind } from '../index.js'
+import {
+  DeletePropertyKind,
+  detectDeletePropertyPosition,
+  detectSetPropertyPosition,
+  SetPropertyKind,
+} from '../index.js'
 
 export type SetValue = string | number | boolean | Date | object
 
@@ -14,7 +19,6 @@ export class JSONBuilder {
       throw new TypeError('paths should not be empty array')
     }
     const result = detectSetPropertyPosition(this.#data, paths)
-    // console.log(paths, result)
     if (result.kind === SetPropertyKind.ParentNotObject) {
       throw new Error(
         `Parent property is not an object, can't add new property to it, need to remove it first: ${paths.slice(0, -1).join('.')}`,
@@ -65,14 +69,19 @@ export class JSONBuilder {
     return this
   }
 
-  // deleteIn(paths: string[]): this {
-  //   if (paths.length === 0) {
-  //     throw new TypeError('paths should not be empty array')
-  //   }
-  //   const result = detectDeletePropertyPosition(this.#data, paths)
-  //   console.log(paths, result)
-  //   return this
-  // }
+  deleteIn(paths: string[]): this {
+    if (paths.length === 0) {
+      throw new TypeError('paths should not be empty array')
+    }
+    const result = detectDeletePropertyPosition(this.#data, paths)
+    if (result.kind === DeletePropertyKind.NotFound) {
+      // do nothing
+      return this
+    }
+    // found, delete the property
+    this.#data = this.#concatBuffers([this.#data.subarray(0, result.start), this.#data.subarray(result.end)])
+    return this
+  }
 
   build(): Uint8Array {
     return this.#data

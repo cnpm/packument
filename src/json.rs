@@ -1,6 +1,6 @@
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
-use sonic_rs::{get, pointer, to_object_iter, JsonValueTrait};
+use sonic_rs::{get, pointer, to_object_iter, JsonValueTrait, LazyValue};
 
 #[derive(Debug)]
 #[napi(string_enum)]
@@ -37,8 +37,7 @@ pub fn detect_set_property_position(
     match get(data, &pointers) {
         Ok(value) => {
             // update existing property
-            let start = value.as_raw_str().as_ptr() as u32 - data.as_ptr() as u32;
-            let end = start + value.as_raw_str().len() as u32;
+            let (start, end) = get_value_position(data, &value);
             Ok(SetPropertyPositionResult {
                 kind: SetPropertyKind::Update,
                 previous: None,
@@ -62,8 +61,7 @@ pub fn detect_set_property_position(
                     }
 
                     // add property to the end of the parent
-                    let parent_start = value.as_raw_str().as_ptr() as u32 - data.as_ptr() as u32;
-                    let parent_end = parent_start + value.as_raw_str().len() as u32;
+                    let (_, parent_end) = get_value_position(data, &value);
                     // the start position of the new property is the `end position - 1` of the parent ("}" character)
                     let start = parent_end - 1;
                     // try to find the last property of the parent
@@ -89,13 +87,160 @@ pub fn detect_set_property_position(
                     start: 0,
                     end: 0,
                 }),
-                Err(e) => {
-                    return Err(napi::Error::new(Status::InvalidArg, e.to_string()));
-                }
+                Err(e) => Err(napi::Error::new(Status::InvalidArg, e.to_string())),
             }
         }
-        Err(e) => {
-            return Err(napi::Error::new(Status::InvalidArg, e.to_string()));
-        }
+        Err(e) => Err(napi::Error::new(Status::InvalidArg, e.to_string())),
     }
+}
+
+#[derive(Debug)]
+#[napi(string_enum)]
+pub enum DeletePropertyKind {
+    /// only one property in the object
+    FoundAndOnlyOne,
+    /// found at the start of the object
+    FoundAtStart,
+    /// found at the middle of the object
+    FoundAtMiddle,
+    NotFound,
+}
+
+#[derive(Debug)]
+#[napi(object)]
+pub struct DeletePropertyPositionResult {
+    pub kind: DeletePropertyKind,
+    pub start: u32,
+    pub end: u32,
+}
+
+#[napi]
+pub fn detect_delete_property_position(
+    data: &[u8],
+    paths: Vec<String>,
+) -> Result<DeletePropertyPositionResult> {
+    // find parent
+    let mut pointers = pointer![].to_vec();
+    for path in paths[..paths.len() - 1].iter() {
+        pointers.push(path.as_str().into());
+    }
+    let delete_property = if let Some(delete_property) = paths.last() {
+        delete_property
+    } else {
+        return Err(napi::Error::new(
+            Status::InvalidArg,
+            "paths should not be empty array",
+        ));
+    };
+    match get(data, &pointers) {
+        Ok(parent) => {
+            let mut has_previous: bool = false;
+            let mut has_next: bool = false;
+            let mut found_position: Option<(u32, u32)> = None;
+            // { "foo": "bar" }
+            //  ^
+            //  start
+            let mut start = get_value_position(data, &parent).0 + 1;
+            for (key, value) in to_object_iter(parent.as_raw_str()).flatten() {
+                let (_, end) = get_value_position(data, &value);
+                if key == *delete_property {
+                    // found the property, set the found position
+                    // { "foo": "bar", "baz": "qux", "next": "next" }
+                    //               ^            ^
+                    //               start        end
+                    found_position = Some((start, end));
+                    if has_previous {
+                        break;
+                    }
+                } else {
+                    if found_position.is_none() {
+                        // not found the property, set the previous position
+                        // { "foo": "bar", "baz": "qux", "next": "next" }
+                        //  ^           ^
+                        //  start,      end
+                        has_previous = true;
+                    } else {
+                        // found the property, set the next position
+                        // { "baz": "qux", "next": "next" }
+                        //  ^           ^
+                        //  start,   end
+                        has_next = true;
+                        break;
+                    }
+                }
+                // next start position is the end position of the current property
+                // { "foo": "bar", "baz": "qux" }
+                //              ^
+                //              start
+                start = end;
+            }
+            let (start, end) = if let Some(found_position) = found_position {
+                found_position
+            } else {
+                // not found
+                return Ok(DeletePropertyPositionResult {
+                    kind: DeletePropertyKind::NotFound,
+                    start: 0,
+                    end: 0,
+                });
+            };
+            // found
+            // has previous position
+            // {
+            //   "prev": "foo", "found": "bar"
+            //                ^              ^
+            //                start          end
+            // }
+            if has_previous {
+                return Ok(DeletePropertyPositionResult {
+                    kind: DeletePropertyKind::FoundAtMiddle,
+                    start,
+                    end,
+                });
+            }
+            if has_next {
+                // move end to the nearest position of ',' character
+                // { "baz": "qux", "next": "next" }
+                //  ^           ^
+                //  start,   end
+                //               ^
+                //               end
+                let mut new_end = end as usize;
+                loop {
+                    if data[new_end] == b',' {
+                        new_end += 1;
+                        break;
+                    }
+                    new_end += 1;
+                }
+                return Ok(DeletePropertyPositionResult {
+                    kind: DeletePropertyKind::FoundAtStart,
+                    start,
+                    end: new_end as u32,
+                });
+            }
+            // no previous or next position, the delete start position is the found start position
+            // {
+            //   "found": "bar"
+            //   ^            ^
+            //   start        end
+            // }
+            return Ok(DeletePropertyPositionResult {
+                kind: DeletePropertyKind::FoundAndOnlyOne,
+                start,
+                end,
+            });
+        }
+        Err(e) if e.is_not_found() => Ok(DeletePropertyPositionResult {
+            kind: DeletePropertyKind::NotFound,
+            start: 0,
+            end: 0,
+        }),
+        Err(e) => Err(napi::Error::new(Status::InvalidArg, e.to_string())),
+    }
+}
+
+fn get_value_position(data: &[u8], value: &LazyValue) -> (u32, u32) {
+    let offset = value.as_raw_str().as_ptr() as usize - data.as_ptr() as usize;
+    (offset as u32, (offset + value.as_raw_str().len()) as u32)
 }

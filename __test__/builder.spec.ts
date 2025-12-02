@@ -190,3 +190,84 @@ test('should work with large json', () => {
   // latest version still exists
   expect(pkg.versions[pkg['dist-tags'].latest]).toMatchSnapshot()
 })
+
+test('should delete property', () => {
+  const data = Buffer.from(`{"a":"b","name": "foo"  , "description": "foo"   ,   "age":1}`)
+  const builder = new JSONBuilder(data)
+  builder.deleteIn(['description'])
+  expect(builder.build().toString()).toBe(`{"a":"b","name": "foo"   ,   "age":1}`)
+  builder.deleteIn(['age'])
+  expect(builder.build().toString()).toBe(`{"a":"b","name": "foo"}`)
+  expect(JSON.parse(builder.build().toString())).toEqual({ a: 'b', name: 'foo' })
+  builder.deleteIn(['a'])
+  expect(builder.build().toString()).toBe(`{"name": "foo"}`)
+  builder.deleteIn(['name'])
+  expect(builder.build().toString()).toBe(`{}`)
+})
+
+test('should delete property in the middle of the object', () => {
+  ;[
+    ['{ "prev": "prev", "middle": "middle", "next": "next" }', '{ "prev": "prev", "next": "next" }'],
+    ['{"prev": "prev"      \t\t\t\t\t,     "middle": "middle", "next": "next" }', '{"prev": "prev", "next": "next" }'],
+    ['{ "prev": "prev"\t, "middle": "middle", "next": "next" }', '{ "prev": "prev", "next": "next" }'],
+    ['{ "prev": \t"prev","middle": "middle", "next": "next" }', '{ "prev": \t"prev", "next": "next" }'],
+    ['{ "prev": 1 , "middle": "middle" , "next": "next" }', '{ "prev": 1 , "next": "next" }'],
+    ['{ "prev": null , "middle": "middle" \t, "next": "next" }', '{ "prev": null \t, "next": "next" }'],
+    ['{ "prev": {}, "middle": "middle", "next": "next" }', '{ "prev": {}, "next": "next" }'],
+  ].forEach(([input, output]) => {
+    const data = Buffer.from(input)
+    const builder = new JSONBuilder(data)
+    builder.deleteIn(['middle'])
+    expect(builder.build().toString()).toBe(output)
+  })
+})
+
+test('should delete property in the end of the object', () => {
+  ;[
+    ['{ "prev": "prev", "middle": "middle", "next": "next" }', '{ "prev": "prev", "middle": "middle" }'],
+    [
+      '{ "prev": "prev"      \t\t\t\t\t,     "middle": "middle", "next": "next" }',
+      '{ "prev": "prev"      \t\t\t\t\t,     "middle": "middle" }',
+    ],
+    ['{ "prev": "prev"\t, "middle": "middle", "next": "next" }', '{ "prev": "prev"\t, "middle": "middle" }'],
+    ['{ "prev": \t"prev","middle": "middle", "next": "next" }', '{ "prev": \t"prev","middle": "middle" }'],
+    ['{ "prev": 1 , "middle": "middle" , "next": "next" }', '{ "prev": 1 , "middle": "middle" }'],
+    ['{ "prev": null , "middle": "middle" \t, "next": "next" }', '{ "prev": null , "middle": "middle" }'],
+    ['{ "prev": {}, "middle": "middle", "next": "next" }', '{ "prev": {}, "middle": "middle" }'],
+  ].forEach(([input, output]) => {
+    const data = Buffer.from(input)
+    const builder = new JSONBuilder(data)
+    builder.deleteIn(['next'])
+    expect(builder.build().toString()).toBe(output)
+  })
+})
+
+test('should delete property in the start of the object', () => {
+  ;[
+    ['{ "prev": "prev", "middle": "middle", "next": "next" }', '{ "middle": "middle", "next": "next" }'],
+    ['  { "prev": "prev"      , "middle": "middle", "next": "next" }', '  { "middle": "middle", "next": "next" }'],
+    [
+      '{ "prev": "prev 😄"      \t\t\t\t\t,     "middle": "middle", "next": "next" }',
+      '{     "middle": "middle", "next": "next" }',
+    ],
+    ['{ "prev": "prev"\t, "middle": "middle", "next": "next" }', '{ "middle": "middle", "next": "next" }'],
+    ['{ "prev": \t"prev","middle": "middle", "next": "next" }', '{"middle": "middle", "next": "next" }'],
+    ['{ "prev": 1 , "middle": "middle" , "next": "next" }', '{ "middle": "middle" , "next": "next" }'],
+    ['{ "prev": null , "middle": "middle" \t, "next": "next" }', '{ "middle": "middle" \t, "next": "next" }'],
+    ['{ "prev": {}, "middle": "middle", "next": "next" }', '{ "middle": "middle", "next": "next" }'],
+  ].forEach(([input, output]) => {
+    const data = Buffer.from(input)
+    const builder = new JSONBuilder(data)
+    builder.deleteIn(['prev'])
+    expect(builder.build().toString()).toBe(output)
+  })
+})
+
+test('should delete emoji property', () => {
+  const data = Buffer.from(JSON.stringify({ '😄': '😄', '😄2': '😄2' }))
+  const builder = new JSONBuilder(data)
+  builder.deleteIn(['😄'])
+  expect(builder.build().toString()).toBe(`{"😄2":"😄2"}`)
+  builder.deleteIn(['😄2'])
+  expect(builder.build().toString()).toBe(`{}`)
+})

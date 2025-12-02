@@ -65,6 +65,24 @@ export interface Bugs {
   url?: string
 }
 
+export declare const enum DeletePropertyKind {
+  /** only one property in the object */
+  FoundAndOnlyOne = 'FoundAndOnlyOne',
+  /** found at the start of the object */
+  FoundAtStart = 'FoundAtStart',
+  /** found at the middle of the object */
+  FoundAtMiddle = 'FoundAtMiddle',
+  NotFound = 'NotFound'
+}
+
+export interface DeletePropertyPositionResult {
+  kind: DeletePropertyKind
+  start: number
+  end: number
+}
+
+export declare function detectDeletePropertyPosition(data: Uint8Array, paths: Array<string>): DeletePropertyPositionResult
+
 export declare function detectSetPropertyPosition(data: Uint8Array, paths: Array<string>): SetPropertyPositionResult
 
 export interface DiffResult {
