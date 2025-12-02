@@ -165,7 +165,7 @@ export interface SetPropertyPositionResult {
   kind: SetPropertyKind
   /**
    * the previous property name if the property is `Add` kind
-   * if the parent object don't have any property, the previous property name is `None`
+   * if the parent object doesn't have any property, the previous property name is `None`
    */
   previous?: string
   start: number
