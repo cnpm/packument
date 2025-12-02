@@ -65,7 +65,7 @@
     "prepublishOnly": "tsc && napi prepublish -t npm",
     "pretest": "yarn build",
     "test": "vitest run",
-    "preversion": "napi build --platform && git add .",
+    "preversion": "napi build --platform --esm && git add .",
     "version": "napi version",
     "prepare": "husky"
   },

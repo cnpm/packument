@@ -248,6 +248,19 @@ pub fn detect_delete_property_position(
     }
 }
 
+#[napi]
+pub fn has_in(data: &[u8], paths: Vec<String>) -> Result<bool> {
+    let mut pointers = pointer![].to_vec();
+    for path in &paths {
+        pointers.push(path.as_str().into());
+    }
+    match get(data, &pointers) {
+        Ok(_) => Ok(true),
+        Err(e) if e.is_not_found() => Ok(false),
+        Err(e) => Err(napi::Error::new(Status::InvalidArg, e.to_string())),
+    }
+}
+
 fn get_value_position(data: &[u8], value: &LazyValue) -> (u32, u32) {
     let offset = value.as_raw_str().as_ptr() as usize - data.as_ptr() as usize;
     (offset as u32, (offset + value.as_raw_str().len()) as u32)

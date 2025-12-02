@@ -112,6 +112,8 @@ export interface Dist {
   attestations?: Attestation
 }
 
+export declare function hasIn(data: Uint8Array, paths: Array<string>): boolean
+
 /**
  * Human metadata
  * @see <https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md#human>
