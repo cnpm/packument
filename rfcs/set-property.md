@@ -3,7 +3,7 @@
 ## Motivation
 
 When we set a property on a JSON string Buffer, we need to parse the object first.
-If the JSON string is large, it will create many JavaScript objects which never be used and raise the memory usage and GC pressure.
+If the JSON string is large, it will create many JavaScript objects which are never used and raise the memory usage and GC pressure.
 
 ## Proposal
 
