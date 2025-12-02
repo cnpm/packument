@@ -294,4 +294,16 @@ test('should delete property with autoDeleteParentIfEmpty option', () => {
   expect(JSON.parse(builder2.build().toString())).toEqual({ 'dist-tags': { latest: '1.0.1' } })
   builder2.deleteIn(['dist-tags', 'latest'], { autoDeleteParentIfEmpty: true })
   expect(JSON.parse(builder2.build().toString())).toEqual({})
+
+  const data3 = Buffer.from(
+    JSON.stringify({
+      'dist-tags': { latest: '1.0.1' },
+      versions: { '1.0.0': { name: 'foo' }, '1.0.1': { name: 'bar' } },
+    }),
+  )
+  const builder3 = new JSONBuilder(data3)
+  builder3.deleteIn(['versions'], { autoDeleteParentIfEmpty: true })
+  expect(JSON.parse(builder3.build().toString())).toEqual({
+    'dist-tags': { latest: '1.0.1' },
+  })
 })
