@@ -1,6 +1,10 @@
+import path from 'node:path'
 import { test, expect } from 'vitest'
 
 import { JSONBuilder } from '../js/index.js'
+import fs from 'node:fs'
+
+const fixtures = path.join(import.meta.dirname, 'fixtures')
 
 test('should update existing property', () => {
   const data = Buffer.from('{"name": "John", "age": 30, "address": { "city": "New York" }}')
@@ -92,7 +96,9 @@ test('should set value work with string, number, boolean, date, object', () => {
   expect(builder.build().toString()).toBe(
     '{"info":{"email":"john@example.com","age":31,"isAdmin":false,"createdAt":"2025-01-01T00:00:00.000Z","address":{"city":"New York","no":101}}}',
   )
-  expect(JSON.parse(builder.build().toString())).toEqual({
+
+  // @ts-expect-error - JSON.parse can work with Uint8Array
+  expect(JSON.parse(builder.build())).toEqual({
     info: {
       email: 'john@example.com',
       age: 31,
@@ -150,4 +156,32 @@ test('should work with double and single quotes', () => {
   expect(JSON.parse(builder.build().toString())).toEqual({
     info: { name: '"John"', '"foo"': 'bar2 👌', "foo'bar": 'baz' },
   })
+})
+
+test('should work with large json', () => {
+  const data = fs.readFileSync(path.join(fixtures, '@primer/react.json'))
+  const builder = new JSONBuilder(data)
+  const version = {
+    name: '@primer/react',
+    version: '10000000.0.0',
+    dist: {
+      shasum: '1234567890',
+      tarball: 'https://registry.npmjs.org/@primer/react/-/react-10000000.0.0.tgz',
+      fileCount: 100,
+      integrity: 'sha512-1234567890',
+      signatures: [
+        {
+          sig: '1234567890',
+          keyid: '1234567890',
+        },
+      ],
+      attestations: {
+        url: 'https://registry.npmjs.org/-/npm/v1/attestations/@primer/react@10000000.0.0',
+        provenance: { predicateType: 'https://slsa.dev/provenance/v1' },
+      },
+      unpackedSize: 10000000,
+    },
+  }
+  builder.setIn(['versions', '10000000.0.0'], version)
+  expect(JSON.parse(builder.build().toString()).versions['10000000.0.0']).toEqual(version)
 })

@@ -9,9 +9,9 @@ export class JSONBuilder {
     this.#data = data
   }
 
-  setIn(paths: string[], value: SetValue) {
+  setIn(paths: string[], value: SetValue): this {
     if (paths.length === 0) {
-      throw new TypeError('Paths should not be empty')
+      throw new TypeError('paths should not be empty array')
     }
     const result = detectSetPropertyPosition(this.#data, paths)
     console.log(paths, result)
@@ -57,7 +57,16 @@ export class JSONBuilder {
     return this
   }
 
-  build() {
+  // deleteIn(paths: string[]): this {
+  //   if (paths.length === 0) {
+  //     throw new TypeError('paths should not be empty array')
+  //   }
+  //   const result = detectDeletePropertyPosition(this.#data, paths)
+  //   console.log(paths, result)
+  //   return this
+  // }
+
+  build(): Uint8Array {
     return this.#data
   }
 }

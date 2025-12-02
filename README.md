@@ -18,7 +18,7 @@ Based on [sonic-rs](https://github.com/cloudwego/sonic-rs) to parse JSON efficie
 - [x] Parse package metadata from buffer
 - [x] Diff versions between local and remote
 - [x] Extract version metadata using position
-- [ ] Set property without parsing
+- [x] Set property without parsing
 - [ ] Add value to Array property without parsing
 
 ## Install
