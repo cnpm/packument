@@ -12,13 +12,13 @@ const getDescriptionScriptBenchmarks = [
   { parser: 'SonicJSONParse', size: '89M', file: '@primer/react.json' },
 ]
 
-// await runMemoryBenchmarks(
-//   getDescriptionScriptBenchmarks.map(({ parser, size, file }) => ({
-//     name: `${parser} description (${size})`,
-//     command: `${runner} ${getDescriptionScript} ${parser} ${file}`,
-//     prepare: '',
-//   })),
-// )
+await runMemoryBenchmarks(
+  getDescriptionScriptBenchmarks.map(({ parser, size, file }) => ({
+    name: `${parser} description (${size})`,
+    command: `${runner} ${getDescriptionScript} ${parser} ${file}`,
+    prepare: '',
+  })),
+)
 
 const addVersionScript = path.join(import.meta.dirname, 'add_version.ts')
 const addVersionScriptBenchmarks = [
