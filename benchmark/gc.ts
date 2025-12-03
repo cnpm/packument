@@ -1,4 +1,4 @@
-import { PerformanceObserver, constants } from 'perf_hooks'
+import { type NodeGCPerformanceDetail, PerformanceObserver, constants } from 'node:perf_hooks'
 
 const gcStats = {
   totalGCDuration: 0, // ms
@@ -38,7 +38,8 @@ const obs = new PerformanceObserver((list) => {
     gcStats.totalGCDuration += entry.duration
     gcStats.count += 1
 
-    const kind = kindToString(entry.kind)
+    const kindCode = (entry as unknown as { detail: NodeGCPerformanceDetail }).detail?.kind
+    const kind = kindToString(kindCode)
     if (!gcStats.byKind[kind]) gcStats.byKind[kind] = 0
     gcStats.byKind[kind] += entry.duration
   }
