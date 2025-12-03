@@ -2,6 +2,7 @@ import {
   DeletePropertyKind,
   detectDeletePropertyPosition,
   detectSetPropertyPosition,
+  hasIn,
   SetPropertyKind,
 } from '../index.js'
 
@@ -93,6 +94,13 @@ export class JSONBuilder {
     // found, delete the property
     this.#data = this.#concatBuffers([this.#data.subarray(0, result.start), this.#data.subarray(result.end)])
     return this
+  }
+
+  hasIn(paths: string[]): boolean {
+    if (paths.length === 0) {
+      throw new TypeError('paths should not be empty array')
+    }
+    return hasIn(this.#data, paths)
   }
 
   build(): Buffer {
