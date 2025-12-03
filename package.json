@@ -52,6 +52,7 @@
     "access": "public"
   },
   "scripts": {
+    "ready": "yarn build && yarn lint && yarn test",
     "artifacts": "napi artifacts",
     "prebench": "yarn build",
     "bench": "node benchmark/bench.ts && node benchmark/bench_memory.ts",

@@ -191,6 +191,29 @@ test('should work with large json', () => {
   expect(pkg.versions[pkg['dist-tags'].latest]).toMatchSnapshot()
 })
 
+test('should set value with buffer', () => {
+  const data = Buffer.from('{}')
+  const builder = new JSONBuilder(data)
+  builder.setIn(['info', 'name'], Buffer.from('"John"'))
+  expect(builder.build().toString()).toBe('{"info":{"name":"John"}}')
+  expect(JSON.parse(builder.build().toString())).toEqual({
+    info: { name: 'John' },
+  })
+  builder.setIn(
+    ['a', 'b'],
+    Buffer.from(
+      JSON.stringify({
+        foo: 'bar',
+      }),
+    ),
+  )
+  expect(builder.build().toString()).toBe('{"info":{"name":"John"},"a":{"b":{"foo":"bar"}}}')
+  expect(JSON.parse(builder.build().toString())).toEqual({
+    info: { name: 'John' },
+    a: { b: { foo: 'bar' } },
+  })
+})
+
 test('should delete property', () => {
   const data = Buffer.from(`{"a":"b","name": "foo"  , "description": "foo"   ,   "age":1}`)
   const builder = new JSONBuilder(data)

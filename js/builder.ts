@@ -6,7 +6,7 @@ import {
   SetPropertyKind,
 } from '../index.js'
 
-export type SetValue = string | number | boolean | Date | object
+export type SetValue = string | number | boolean | Date | object | Buffer
 
 export interface DeleteOptions {
   /**
@@ -41,11 +41,11 @@ export class JSONBuilder {
       return this
     }
 
+    const valueBuffer = Buffer.isBuffer(value) ? value : Buffer.from(JSON.stringify(value))
     if (result.kind === SetPropertyKind.Update) {
-      const updateBuffer = Buffer.from(JSON.stringify(value))
       this.#data = this.#concatBuffers([
         this.#data.subarray(0, result.start),
-        updateBuffer,
+        valueBuffer,
         this.#data.subarray(result.end),
       ])
       return this
@@ -57,7 +57,7 @@ export class JSONBuilder {
 
     // add new property
     const property = paths[paths.length - 1]
-    const addBuffer = Buffer.from(`${JSON.stringify(property)}:${JSON.stringify(value)}`)
+    const addBuffer = Buffer.concat([Buffer.from(`${JSON.stringify(property)}:`), valueBuffer])
     if (result.previous) {
       // has previous property, add the new property after the previous property
       // add "," after the previous property
