@@ -10,9 +10,11 @@ const filename = process.argv[3] || '@primer/react.json'
 
 const fixtures = path.join(import.meta.dirname, '../__test__/fixtures')
 const largeData = fs.readFileSync(path.join(fixtures, filename))
+console.log('')
 console.log('## Benchmarking %s with %s', method, filename)
-console.log('- Data size: %sMB', largeData.length / 1024 / 1024)
+console.log('- Data size: %sMB', (largeData.length / 1024 / 1024).toFixed(0))
 console.log('- GC: %s', process.env.GC ? 'enabled' : 'disabled')
+console.log('')
 
 const version = {
   name: '@primer/react',
@@ -64,6 +66,7 @@ for (let i = 0; i < 5; i++) {
 if (process.env.GC) {
   setTimeout(() => {
     const stats = getGCStats()
+    console.log('')
     console.log(
       '[GC]',
       'total(ms)=',
@@ -75,9 +78,6 @@ if (process.env.GC) {
       'byKind=',
       stats.byKind,
     )
-    console.log('')
-    console.log('--------------------------------')
-    console.log('')
   }, 2000)
 }
 
