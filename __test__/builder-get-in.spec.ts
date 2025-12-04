@@ -45,3 +45,11 @@ test('should get buffer return undefined if property does not exist', () => {
   expect(builder.getBufferIn(['email'])).toBeUndefined()
   expect(builder.getBufferIn(['address', 'country'])).toBeUndefined()
 })
+
+test('should throw error in invalid JSON data', () => {
+  const data = Buffer.from('{"name": "John",')
+  const builder = new JSONBuilder(data)
+  expect(() => builder.getIn<string>(['name', 'no'])).toThrow(
+    'invalid type: string "John", expected a JSON object at line 1 column 15',
+  )
+})
