@@ -238,6 +238,26 @@ pub fn has_in(data: &[u8], paths: Vec<String>) -> Result<bool> {
     }
 }
 
+#[derive(Debug)]
+#[napi(object)]
+pub struct GetInResult {
+    pub start: u32,
+    pub end: u32,
+}
+
+#[napi]
+pub fn get_in(data: &[u8], paths: Vec<String>) -> Result<Option<GetInResult>> {
+    let pointers = build_pointers(&paths);
+    match get(data, &pointers) {
+        Ok(value) => {
+            let (start, end) = get_value_position(data, &value);
+            Ok(Some(GetInResult { start, end }))
+        }
+        Err(e) if e.is_not_found() => Ok(None),
+        Err(e) => Err(napi::Error::new(Status::InvalidArg, e.to_string())),
+    }
+}
+
 fn get_value_position(data: &[u8], value: &LazyValue) -> (u32, u32) {
     let offset = value.as_raw_str().as_ptr() as usize - data.as_ptr() as usize;
     (offset as u32, (offset + value.as_raw_str().len()) as u32)

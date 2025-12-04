@@ -2,6 +2,7 @@ import {
   DeletePropertyKind,
   detectDeletePropertyPosition,
   detectSetPropertyPosition,
+  getIn,
   hasIn,
   SetPropertyKind,
 } from '../index.js'
@@ -101,6 +102,26 @@ export class JSONBuilder {
       throw new TypeError('paths should not be empty array')
     }
     return hasIn(this.#data, paths)
+  }
+
+  getIn<T = unknown>(paths: string[]): T | undefined {
+    const buffer = this.getBufferIn(paths)
+    if (!buffer) {
+      return undefined
+    }
+    // @ts-expect-error - JSON.parse can work with Uint8Array
+    return JSON.parse(buffer) as T
+  }
+
+  getBufferIn(paths: string[]): Buffer | undefined {
+    if (paths.length === 0) {
+      throw new TypeError('paths should not be empty array')
+    }
+    const result = getIn(this.#data, paths)
+    if (!result) {
+      return undefined
+    }
+    return this.#data.subarray(result.start, result.end)
   }
 
   build(): Buffer {
