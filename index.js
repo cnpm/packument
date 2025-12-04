@@ -557,10 +557,11 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { Package, DeletePropertyKind, detectDeletePropertyPosition, detectSetPropertyPosition, hasIn, SetPropertyKind } = nativeBinding
+const { Package, DeletePropertyKind, detectDeletePropertyPosition, detectSetPropertyPosition, getIn, hasIn, SetPropertyKind } = nativeBinding
 export { Package }
 export { DeletePropertyKind }
 export { detectDeletePropertyPosition }
 export { detectSetPropertyPosition }
+export { getIn }
 export { hasIn }
 export { SetPropertyKind }

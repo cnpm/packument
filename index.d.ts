@@ -112,6 +112,13 @@ export interface Dist {
   attestations?: Attestation
 }
 
+export declare function getIn(data: Uint8Array, paths: Array<string>): GetInResult | null
+
+export interface GetInResult {
+  start: number
+  end: number
+}
+
 export declare function hasIn(data: Uint8Array, paths: Array<string>): boolean
 
 /**
