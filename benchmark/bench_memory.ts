@@ -34,3 +34,18 @@ await runMemoryBenchmarks(
     prepare: '',
   })),
 )
+
+const getPropertyValueScript = path.join(import.meta.dirname, 'get_property_value.ts')
+const getPropertyValueScriptBenchmarks = [
+  { parser: 'JSONParse', size: '22M', file: 'npm.json' },
+  { parser: 'JSONParse', size: '89M', file: '@primer/react.json' },
+  { parser: 'SonicJSONParse', size: '22M', file: 'npm.json' },
+  { parser: 'SonicJSONParse', size: '89M', file: '@primer/react.json' },
+]
+await runMemoryBenchmarks(
+  getPropertyValueScriptBenchmarks.map(({ parser, size, file }) => ({
+    name: `${parser} get property value (${size})`,
+    command: `${runner} ${getPropertyValueScript} ${parser} ${file}`,
+    prepare: '',
+  })),
+)
