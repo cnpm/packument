@@ -30,11 +30,23 @@ fn build_pointers(paths: &[String]) -> Vec<PointerNode> {
     paths.iter().map(|p| p.as_str().into()).collect()
 }
 
+#[inline]
+fn check_paths(paths: &[String]) -> Result<()> {
+    if paths.is_empty() {
+        return Err(napi::Error::new(
+            Status::InvalidArg,
+            "paths should not be empty array".to_string(),
+        ));
+    }
+    Ok(())
+}
+
 #[napi]
 pub fn detect_set_property_position(
     data: &[u8],
     paths: Vec<String>,
 ) -> Result<SetPropertyPositionResult> {
+    check_paths(&paths)?;
     let pointers = build_pointers(&paths);
 
     // Try to get the property directly first
@@ -126,6 +138,7 @@ pub fn detect_delete_property_position(
     data: &[u8],
     paths: Vec<String>,
 ) -> Result<DeletePropertyPositionResult> {
+    check_paths(&paths)?;
     let pointers = build_pointers(&paths);
 
     // fast path: check if property exists
@@ -230,6 +243,7 @@ pub fn detect_delete_property_position(
 
 #[napi]
 pub fn has_in(data: &[u8], paths: Vec<String>) -> Result<bool> {
+    check_paths(&paths)?;
     let pointers = build_pointers(&paths);
     match get(data, &pointers) {
         Ok(_) => Ok(true),
@@ -247,6 +261,7 @@ pub struct GetInResult {
 
 #[napi]
 pub fn get_in(data: &[u8], paths: Vec<String>) -> Result<Option<GetInResult>> {
+    check_paths(&paths)?;
     let pointers = build_pointers(&paths);
     match get(data, &pointers) {
         Ok(value) => {
