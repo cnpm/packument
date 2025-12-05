@@ -1,6 +1,6 @@
 import { Package as NativePackage } from '../index.js'
 
-export type * from '../index.js'
+export * from '../index.js'
 
 export class Package extends NativePackage {
   #data: Buffer
