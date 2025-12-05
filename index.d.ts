@@ -53,6 +53,24 @@ export declare class Package {
   get isUnpublished(): boolean
   get versions(): Record<string, Version>
   getLatestVersion(): Version | null
+  /**
+   * Get the position of a value at the specified path in the package metadata.
+   *
+   * ### Parameters
+   * - `paths`: Array of strings representing the path to the value (e.g., `["versions", "1.0.0", "name"]`)
+   *
+   * ### Returns
+   * - `Option<(u32, u32)>`: Start and end byte positions of the value, or None if not found
+   *
+   * ### Example
+   * ```ts
+   * const pkg = new Package(buffer);
+   * const position = pkg.getInPosition(['versions', '1.0.0', 'name']);
+   * if (position) {
+   *   const value = buffer.subarray(position[0], position[1]);
+   * }
+   * ```
+   */
   getInPosition(paths: Array<string>): [number, number] | null
 }
 
