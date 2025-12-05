@@ -220,14 +220,10 @@ impl<'a> Package<'a> {
     #[napi]
     pub fn get_in_position(&self, paths: Vec<String>) -> Result<Option<(u32, u32)>> {
         json::check_paths(&paths)?;
-        let pointers = json::build_pointers(&paths);
-        match self.root.pointer(pointers) {
-            Some(value) => {
-                let (start, end) = self.position(&value);
-                Ok(Some((start, end)))
-            }
-            None => Ok(None),
-        }
+        Ok(self
+            .root
+            .pointer(json::build_pointers(&paths))
+            .map(|value| self.position(&value)))
     }
 
     fn position(&self, value: &LazyValue) -> (u32, u32) {
