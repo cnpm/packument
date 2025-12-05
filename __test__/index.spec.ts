@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { test, expect } from 'vitest'
 
-import { Package } from '../'
+import { Package } from '../js/index.js'
 
 const fixtures = path.join(import.meta.dirname, 'fixtures')
 
@@ -144,4 +144,15 @@ test('should get repository with invalid data', () => {
   expect(pkg.repository).toBeNull()
   pkg = new Package(Buffer.from('{"repository": 1}'))
   expect(pkg.repository).toBeNull()
+})
+
+test('should get in work', () => {
+  const data = fs.readFileSync(path.join(fixtures, 'obug.json'))
+  const pkg = new Package(data)
+  expect(pkg.getIn(['versions', '1.0.0', 'name'])).toEqual('obug')
+  expect(pkg.getIn(['versions', '1.0.0'])).toMatchSnapshot()
+})
+
+test('should throw error when get in with invalid paths', () => {
+  expect(() => new Package(Buffer.from('{}')).getIn([])).toThrow(/paths should not be empty array/)
 })

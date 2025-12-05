@@ -26,12 +26,12 @@ pub struct SetPropertyPositionResult {
 
 /// Build pointers from string paths without cloning - returns references into the original strings
 #[inline]
-fn build_pointers(paths: &[String]) -> Vec<PointerNode> {
+pub(crate) fn build_pointers(paths: &[String]) -> Vec<PointerNode> {
     paths.iter().map(|p| p.as_str().into()).collect()
 }
 
 #[inline]
-fn check_paths(paths: &[String]) -> Result<()> {
+pub(crate) fn check_paths(paths: &[String]) -> Result<()> {
     if paths.is_empty() {
         return Err(napi::Error::new(
             Status::InvalidArg,

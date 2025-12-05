@@ -6,6 +6,8 @@ use napi_derive::napi;
 use sonic_rs::{from_slice, from_str, to_array_iter};
 use sonic_rs::{to_object_iter, JsonValueTrait, LazyValue};
 
+use crate::json;
+
 /// Package metadata document, sometimes informally called a "packument" or "doc.json".
 /// @see <https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md>
 #[napi]
@@ -213,6 +215,19 @@ impl<'a> Package<'a> {
             }
         }
         None
+    }
+
+    #[napi]
+    pub fn get_in_position(&self, paths: Vec<String>) -> Result<Option<(u32, u32)>> {
+        json::check_paths(&paths)?;
+        let pointers = json::build_pointers(&paths);
+        match self.root.pointer(pointers) {
+            Some(value) => {
+                let (start, end) = self.position(&value);
+                Ok(Some((start, end)))
+            }
+            None => Ok(None),
+        }
     }
 
     fn position(&self, value: &LazyValue) -> (u32, u32) {

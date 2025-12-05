@@ -256,6 +256,254 @@ exports[`should get dist-tags 1`] = `
 }
 `;
 
+exports[`should get in 1`] = `
+{
+  "_from": "file:obug-1.0.0.tgz",
+  "_hasShrinkwrap": false,
+  "_id": "obug@1.0.0",
+  "_integrity": "sha512-WKcS43Yl6YPJekid7KiRdT6CHMSmYWVfJiSFbTaGxWQlC+cEBPxHa9jR1uS2cMiQmXd8Hsa2ipAKErQ/GLhSpg==",
+  "_nodeVersion": "24.11.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages-npm-production",
+    "tmp": "tmp/obug_1.0.0_1762980969767_0.852119856339757",
+  },
+  "_npmUser": {
+    "email": "npm-oidc-no-reply@github.com",
+    "name": "GitHub Actions",
+    "trustedPublisher": {
+      "id": "github",
+      "oidcConfigId": "oidc:280df2e7-b41f-43bd-b495-a0b67a441b9c",
+    },
+  },
+  "_npmVersion": "11.6.1",
+  "_resolved": "/tmp/cb2598882ed5536c00c4ad10136f0d5c/obug-1.0.0.tgz",
+  "author": {
+    "email": "sxzz@sxzz.moe",
+    "name": "Kevin Deng",
+  },
+  "bugs": {
+    "url": "https://github.com/sxzz/obug/issues",
+  },
+  "description": "A lightweight JavaScript debugging utility, forked from debug, featuring TypeScript and ESM support.",
+  "devDependencies": {
+    "@sxzz/eslint-config": "^7.2.10",
+    "@sxzz/prettier-config": "^2.2.4",
+    "@types/debug": "^4.1.12",
+    "@types/node": "^24.10.0",
+    "@vitest/browser-playwright": "^4.0.8",
+    "@vitest/coverage-v8": "^4.0.8",
+    "bumpp": "^10.3.1",
+    "debug": "^4.4.3",
+    "eslint": "^9.39.1",
+    "playwright": "^1.56.1",
+    "prettier": "^3.6.2",
+    "tsdown": "^0.16.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.2",
+    "vitest": "^4.0.8",
+  },
+  "directories": {},
+  "dist": {
+    "attestations": {
+      "provenance": {
+        "predicateType": "https://slsa.dev/provenance/v1",
+      },
+      "url": "https://registry.npmjs.org/-/npm/v1/attestations/obug@1.0.0",
+    },
+    "fileCount": 10,
+    "integrity": "sha512-WKcS43Yl6YPJekid7KiRdT6CHMSmYWVfJiSFbTaGxWQlC+cEBPxHa9jR1uS2cMiQmXd8Hsa2ipAKErQ/GLhSpg==",
+    "shasum": "cbfafcfd7fb3549cfc6399d476f91a8abf70844b",
+    "signatures": [
+      {
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+        "sig": "MEUCIE25MUd+zioHizVkdAvu0udw5BpT6hpOFPpbVBk7eNlRAiEAtFY8x5NZrbMOXb7odFp6Chxk6Cd4n5K7bZqY516dyxE=",
+      },
+    ],
+    "tarball": "https://registry.npmjs.org/obug/-/obug-1.0.0.tgz",
+    "unpackedSize": 22506,
+  },
+  "exports": {
+    ".": {
+      "browser": "./dist/browser.js",
+      "default": "./dist/node.js",
+    },
+    "./package.json": "./package.json",
+  },
+  "funding": [
+    "https://github.com/sponsors/sxzz",
+    "https://opencollective.com/debug",
+  ],
+  "homepage": "https://github.com/sxzz/obug#readme",
+  "jsdelivr": "./dist/browser.min.js",
+  "license": "MIT",
+  "main": "./dist/node.js",
+  "maintainers": [
+    {
+      "email": "sxzz@sxzz.moe",
+      "name": "sxzz",
+    },
+  ],
+  "module": "./dist/node.js",
+  "name": "obug",
+  "peerDependencies": {
+    "ms": "^2.0.0",
+  },
+  "peerDependenciesMeta": {
+    "ms": {
+      "optional": true,
+    },
+  },
+  "prettier": "@sxzz/prettier-config",
+  "publishConfig": {
+    "access": "public",
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sxzz/obug.git",
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "format": "prettier --cache --write .",
+    "lint": "eslint --cache .",
+    "lint:fix": "pnpm run lint --fix",
+    "play": "vite playground",
+    "release": "bumpp",
+    "test": "vitest",
+    "test:coverage": "vitest --project node --coverage",
+    "typecheck": "tsc --noEmit",
+  },
+  "type": "module",
+  "types": "./dist/browser.d.ts",
+  "unpkg": "./dist/browser.min.js",
+  "version": "1.0.0",
+}
+`;
+
+exports[`should get in work 1`] = `
+{
+  "_from": "file:obug-1.0.0.tgz",
+  "_hasShrinkwrap": false,
+  "_id": "obug@1.0.0",
+  "_integrity": "sha512-WKcS43Yl6YPJekid7KiRdT6CHMSmYWVfJiSFbTaGxWQlC+cEBPxHa9jR1uS2cMiQmXd8Hsa2ipAKErQ/GLhSpg==",
+  "_nodeVersion": "24.11.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages-npm-production",
+    "tmp": "tmp/obug_1.0.0_1762980969767_0.852119856339757",
+  },
+  "_npmUser": {
+    "email": "npm-oidc-no-reply@github.com",
+    "name": "GitHub Actions",
+    "trustedPublisher": {
+      "id": "github",
+      "oidcConfigId": "oidc:280df2e7-b41f-43bd-b495-a0b67a441b9c",
+    },
+  },
+  "_npmVersion": "11.6.1",
+  "_resolved": "/tmp/cb2598882ed5536c00c4ad10136f0d5c/obug-1.0.0.tgz",
+  "author": {
+    "email": "sxzz@sxzz.moe",
+    "name": "Kevin Deng",
+  },
+  "bugs": {
+    "url": "https://github.com/sxzz/obug/issues",
+  },
+  "description": "A lightweight JavaScript debugging utility, forked from debug, featuring TypeScript and ESM support.",
+  "devDependencies": {
+    "@sxzz/eslint-config": "^7.2.10",
+    "@sxzz/prettier-config": "^2.2.4",
+    "@types/debug": "^4.1.12",
+    "@types/node": "^24.10.0",
+    "@vitest/browser-playwright": "^4.0.8",
+    "@vitest/coverage-v8": "^4.0.8",
+    "bumpp": "^10.3.1",
+    "debug": "^4.4.3",
+    "eslint": "^9.39.1",
+    "playwright": "^1.56.1",
+    "prettier": "^3.6.2",
+    "tsdown": "^0.16.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.2",
+    "vitest": "^4.0.8",
+  },
+  "directories": {},
+  "dist": {
+    "attestations": {
+      "provenance": {
+        "predicateType": "https://slsa.dev/provenance/v1",
+      },
+      "url": "https://registry.npmjs.org/-/npm/v1/attestations/obug@1.0.0",
+    },
+    "fileCount": 10,
+    "integrity": "sha512-WKcS43Yl6YPJekid7KiRdT6CHMSmYWVfJiSFbTaGxWQlC+cEBPxHa9jR1uS2cMiQmXd8Hsa2ipAKErQ/GLhSpg==",
+    "shasum": "cbfafcfd7fb3549cfc6399d476f91a8abf70844b",
+    "signatures": [
+      {
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+        "sig": "MEUCIE25MUd+zioHizVkdAvu0udw5BpT6hpOFPpbVBk7eNlRAiEAtFY8x5NZrbMOXb7odFp6Chxk6Cd4n5K7bZqY516dyxE=",
+      },
+    ],
+    "tarball": "https://registry.npmjs.org/obug/-/obug-1.0.0.tgz",
+    "unpackedSize": 22506,
+  },
+  "exports": {
+    ".": {
+      "browser": "./dist/browser.js",
+      "default": "./dist/node.js",
+    },
+    "./package.json": "./package.json",
+  },
+  "funding": [
+    "https://github.com/sponsors/sxzz",
+    "https://opencollective.com/debug",
+  ],
+  "homepage": "https://github.com/sxzz/obug#readme",
+  "jsdelivr": "./dist/browser.min.js",
+  "license": "MIT",
+  "main": "./dist/node.js",
+  "maintainers": [
+    {
+      "email": "sxzz@sxzz.moe",
+      "name": "sxzz",
+    },
+  ],
+  "module": "./dist/node.js",
+  "name": "obug",
+  "peerDependencies": {
+    "ms": "^2.0.0",
+  },
+  "peerDependenciesMeta": {
+    "ms": {
+      "optional": true,
+    },
+  },
+  "prettier": "@sxzz/prettier-config",
+  "publishConfig": {
+    "access": "public",
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sxzz/obug.git",
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "format": "prettier --cache --write .",
+    "lint": "eslint --cache .",
+    "lint:fix": "pnpm run lint --fix",
+    "play": "vite playground",
+    "release": "bumpp",
+    "test": "vitest",
+    "test:coverage": "vitest --project node --coverage",
+    "typecheck": "tsc --noEmit",
+  },
+  "type": "module",
+  "types": "./dist/browser.d.ts",
+  "unpkg": "./dist/browser.min.js",
+  "version": "1.0.0",
+}
+`;
+
 exports[`should get latest version 1`] = `
 {
   "description": "a package manager for JavaScript",

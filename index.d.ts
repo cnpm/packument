@@ -53,6 +53,7 @@ export declare class Package {
   get isUnpublished(): boolean
   get versions(): Record<string, Version>
   getLatestVersion(): Version | null
+  getInPosition(paths: Array<string>): [number, number] | null
 }
 
 export interface Attestation {
