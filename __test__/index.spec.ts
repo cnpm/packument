@@ -146,7 +146,7 @@ test('should get repository with invalid data', () => {
   expect(pkg.repository).toBeNull()
 })
 
-test('should get in work', () => {
+test('should getIn work correctly', () => {
   const data = fs.readFileSync(path.join(fixtures, 'obug.json'))
   const pkg = new Package(data)
   expect(pkg.getIn(['versions', '1.0.0', 'name'])).toEqual('obug')
