@@ -38,7 +38,7 @@ jobs:
           node-version: 24
           cache: yarn
       - name: Install
-        uses: dtolnay/rust-toolchain@6d9817901c499d6b02debbb57edb38d33daa680b # stable
+        uses: dtolnay/rust-toolchain@0b1efabc08b657293548b77fb76cc02d26091c7e # stable
         with:
           components: clippy, rustfmt
       - name: Install dependencies
@@ -94,7 +94,7 @@ jobs:
           node-version: 24
           cache: yarn
       - name: Install
-        uses: dtolnay/rust-toolchain@6d9817901c499d6b02debbb57edb38d33daa680b # stable
+        uses: dtolnay/rust-toolchain@0b1efabc08b657293548b77fb76cc02d26091c7e # stable
         with:
           toolchain: stable
           targets: ${{ matrix.settings.target }}
