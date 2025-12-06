@@ -1,2 +1,2 @@
-export * from '../index.js'
+export * from './package.js'
 export * from './builder.js'
