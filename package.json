@@ -7,7 +7,6 @@
     "url": "git+ssh://git@github.com/cnpm/packument.git"
   },
   "license": "MIT",
-  "browser": "browser.js",
   "keywords": [
     "napi-rs",
     "NAPI",
@@ -45,7 +44,7 @@
     ]
   },
   "engines": {
-    "node": ">= 22.0.0"
+    "node": ">= 20.0.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
