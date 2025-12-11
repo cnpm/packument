@@ -7,7 +7,6 @@
     "url": "git+ssh://git@github.com/cnpm/packument.git"
   },
   "license": "MIT",
-  "browser": "browser.js",
   "keywords": [
     "napi-rs",
     "NAPI",
