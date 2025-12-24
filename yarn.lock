@@ -9,7 +9,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@cnpmjs/packument@workspace:."
   dependencies:
-    "@codspeed/tinybench-plugin": "npm:5.0.1"
+    "@codspeed/tinybench-plugin": "npm:^5.0.1"
     "@emnapi/core": "npm:^1.5.0"
     "@emnapi/runtime": "npm:^1.5.0"
     "@napi-rs/cli": "npm:^3.2.0"
@@ -42,7 +42,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codspeed/tinybench-plugin@npm:5.0.1":
+"@codspeed/tinybench-plugin@npm:^5.0.1":
   version: 5.0.1
   resolution: "@codspeed/tinybench-plugin@npm:5.0.1"
   dependencies:
