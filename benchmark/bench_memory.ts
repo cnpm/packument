@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-import { runMemoryBenchmarks } from './memory_usage.ts'
+import { runMemoryBenchmarks } from './memory_usage.js'
 
 const runner = process.version.startsWith('v20.') ? 'npx tsx' : 'node'
 
