@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { Bench } from 'tinybench'
 import { withCodSpeed } from '@codspeed/tinybench-plugin'
+import { Bench } from 'tinybench'
 
 import { Package } from '../index.js'
 import { JSONBuilder } from '../js/builder.js'
