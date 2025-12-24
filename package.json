@@ -73,6 +73,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "@codspeed/tinybench-plugin": "5.0.1",
     "@emnapi/core": "^1.5.0",
     "@emnapi/runtime": "^1.5.0",
     "@napi-rs/cli": "^3.2.0",

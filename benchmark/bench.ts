@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { Bench } from 'tinybench'
+import { withCodSpeed } from '@codspeed/tinybench-plugin'
 
 import { Package } from '../index.js'
 import { JSONBuilder } from '../js/builder.js'
@@ -208,7 +209,7 @@ function addVersionWithSonicJSONParse(data: Buffer): Uint8Array {
 //   SonicJSONParseReadmeJSONBufferWithPosition(bigReadmeData).length,
 // )
 
-b = new Bench()
+b = withCodSpeed(new Bench())
 b.add('JSONParse small data readme string (117KB)', () => {
   JSONParseReadme(smallData)
 })
