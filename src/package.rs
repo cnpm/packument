@@ -11,17 +11,22 @@ use crate::json;
 /// Package metadata document, sometimes informally called a "packument" or "doc.json".
 /// @see <https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md>
 #[napi]
-pub struct Package<'a> {
-    root: LazyValue<'a>,
+pub struct Package {
+    // Use an owned JSON representation so that the data outlives any external buffer.
+    root: LazyValue<'static>,
 }
 
 #[napi]
-impl<'a> Package<'a> {
+impl Package {
     #[napi(constructor)]
-    pub fn new(data: &'a [u8]) -> Result<Self> {
-        let root: LazyValue =
+    pub fn new(data: &[u8]) -> Result<Self> {
+        let owned: LazyValue =
             from_slice(data).map_err(|e| Error::new(Status::InvalidArg, e.to_string()))?;
-        Ok(Package { root })
+        // Convert the owned value into a 'static LazyValue by leaking it.
+        // This avoids borrowing from `data` and prevents dangling pointers when
+        // the package is used across the N-API boundary.
+        let leaked = Box::leak(Box::new(owned));
+        Ok(Package { root: LazyValue::from(leaked.clone()) })
     }
 
     /// Find the diff versions between the local package and the remote package
