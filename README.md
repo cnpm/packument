@@ -1,6 +1,7 @@
 # `@cnpmjs/packument`
 
 [![CI](https://github.com/cnpm/packument/actions/workflows/CI.yml/badge.svg)](https://github.com/cnpm/packument/actions/workflows/CI.yml)
+[![CodSpeed](https://img.shields.io/endpoint?url=https://codspeed.io/badge.json?org=cnpm&project=packument&utm_source=badge)](https://codspeed.io/cnpm/packument?utm_source=badge)
 [![Node.js Version](https://img.shields.io/node/v/@cnpmjs/packument.svg?style=flat)](https://nodejs.org/en/download/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 ![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/cnpm/packument)
