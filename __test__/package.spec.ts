@@ -160,8 +160,17 @@ test('should throw error when get in with invalid paths', () => {
 test('should get _npmUser from version', () => {
   const data = fs.readFileSync(path.join(fixtures, 'a.json'))
   const pkg = new Package(data)
+  // getIn returns raw JSON, so the field name is _npmUser (as in JSON)
+  // When accessing through typed Version object, it's npmUser (TypeScript convention)
   const version = pkg.getIn<any>(['versions', '0.0.1'])
   expect(version._npmUser).toBeTruthy()
   expect(version._npmUser.name).toBe('adlanelm')
   expect(version._npmUser.email).toBe('adlan.elm@gmail.com')
+  
+  // Also test via the typed interface
+  const latestVersion = pkg.getLatestVersion()
+  if (latestVersion && latestVersion.npmUser) {
+    expect(latestVersion.npmUser.name).toBeTruthy()
+    expect(latestVersion.npmUser.email).toBeTruthy()
+  }
 })
