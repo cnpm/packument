@@ -49,7 +49,7 @@ jobs:
         run: yarn build --target x86_64-unknown-linux-gnu --use-napi-cross
 
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@972e3437949c89e1357ebd1a2dbc852fcbc57245 #v4
+        uses: CodSpeedHQ/action@fa0c9b1770f933c1bc025c83a9b42946b102f4e6 # v4
         with:
           mode: simulation
           run: node benchmark/bench.ts
