@@ -174,3 +174,29 @@ test('should get _npmUser from version', () => {
     expect(latestVersion.npmUser.email).toBeTruthy()
   }
 })
+
+test('should handle missing _npmUser field', () => {
+  // Test with package that has no _npmUser field at all
+  const pkgWithoutNpmUser = new Package(
+    Buffer.from(
+      JSON.stringify({
+        name: 'test-pkg',
+        'dist-tags': { latest: '1.0.0' },
+        versions: {
+          '1.0.0': {
+            name: 'test-pkg',
+            version: '1.0.0',
+            dist: { tarball: 'https://example.com/test.tgz' },
+          },
+        },
+      }),
+    ),
+  )
+  const latestVersion = pkgWithoutNpmUser.getLatestVersion()
+  expect(latestVersion).toBeTruthy()
+  expect(latestVersion!.npmUser).toBeUndefined()
+  
+  // Also test via raw JSON access
+  const version = pkgWithoutNpmUser.getIn<any>(['versions', '1.0.0'])
+  expect(version._npmUser).toBeUndefined()
+})
