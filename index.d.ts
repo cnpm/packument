@@ -216,6 +216,7 @@ export interface Version {
   dist?: Dist
   funding?: Array<string>
   scripts?: Record<string, string>
+  npmUser?: Human
   description?: string
   hasShrinkwrap?: boolean
   /** an array of operating systems supported by the package */
