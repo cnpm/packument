@@ -296,7 +296,8 @@ pub struct Version {
     // pub exports: Option<HashMap<String, ExportTarget>>,
     pub funding: Option<Vec<String>>,
     pub scripts: Option<HashMap<String, String>>,
-    // pub _npmUser: Option<Human>,
+    #[serde(rename = "_npmUser")]
+    pub npm_user: Option<Human>,
     // pub jsdelivr: Option<String>,
     // pub prettier: Option<String>,
     // pub _resolved: Option<String>,

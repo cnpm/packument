@@ -28,6 +28,10 @@ exports[`create package metadata instance from buffer 1`] = `
     },
   ],
   "name": "a",
+  "npmUser": {
+    "email": "lars.roald@gmail.com",
+    "name": "lroal",
+  },
   "version": "4.0.0",
 }
 `;
@@ -300,6 +304,10 @@ exports[`should get latest version 1`] = `
     },
   ],
   "name": "npm",
+  "npmUser": {
+    "email": "owlstronaut@github.com",
+    "name": "owlstronaut",
+  },
   "scripts": {
     "dependencies": "node scripts/bundle-and-gitignore-deps.js && node scripts/dependency-graph.js",
     "dumpconf": "env | grep npm | sort | uniq",

@@ -156,3 +156,12 @@ test('should getIn work correctly', () => {
 test('should throw error when get in with invalid paths', () => {
   expect(() => new Package(Buffer.from('{}')).getIn([])).toThrow(/paths should not be empty array/)
 })
+
+test('should get _npmUser from version', () => {
+  const data = fs.readFileSync(path.join(fixtures, 'a.json'))
+  const pkg = new Package(data)
+  const version = pkg.getIn<any>(['versions', '0.0.1'])
+  expect(version._npmUser).toBeTruthy()
+  expect(version._npmUser.name).toBe('adlanelm')
+  expect(version._npmUser.email).toBe('adlan.elm@gmail.com')
+})
