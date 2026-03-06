@@ -7,6 +7,7 @@ use sonic_rs::{from_slice, from_str, to_array_iter};
 use sonic_rs::{to_object_iter, JsonValueTrait, LazyValue};
 
 use crate::json;
+use crate::view;
 
 /// Package metadata document, sometimes informally called a "packument" or "doc.json".
 /// @see <https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md>
@@ -240,6 +241,16 @@ impl<'a> Package<'a> {
             .root
             .pointer(json::build_pointers(&paths))
             .map(|value| self.position(&value)))
+    }
+
+    /// Get all commonly-needed top-level metadata in a single pass.
+    ///
+    /// Extracts name, description, readme, repository, maintainers,
+    /// dist-tags, time, isUnpublished, and version keys in one traversal.
+    /// Much faster than accessing each field individually.
+    #[napi]
+    pub fn get_meta_info(&self) -> Result<view::MetaInfo> {
+        view::parse_meta_info(self.root.as_raw_str())
     }
 
     fn position(&self, value: &LazyValue) -> (u32, u32) {

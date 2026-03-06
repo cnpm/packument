@@ -72,6 +72,14 @@ export declare class Package {
    * ```
    */
   getInPosition(paths: Array<string>): [number, number] | null
+  /**
+   * Get all commonly-needed top-level metadata in a single pass.
+   *
+   * Extracts name, description, readme, repository, maintainers,
+   * dist-tags, time, isUnpublished, and version keys in one traversal.
+   * Much faster than accessing each field individually.
+   */
+  getMetaInfo(): MetaInfo
 }
 
 export interface Attestation {
@@ -151,6 +159,27 @@ export interface Human {
   email?: string
   /** a url for a web page with more information about the author */
   url?: string
+}
+
+/**
+ * Top-level metadata extracted from a packument in a single pass.
+ *
+ * Equivalent to reading `.name`, `.description`, `.readme`, `.repository`,
+ * `.maintainers`, `.distTags`, `.time`, `.isUnpublished` individually,
+ * but only traverses the JSON document once. The `versions` field extracts
+ * only the version keys (using `IgnoredAny` to skip manifests).
+ */
+export interface MetaInfo {
+  name?: string
+  description?: string
+  readme?: string
+  repository?: string | Repository
+  maintainers?: Array<Human>
+  distTags?: Record<string, string>
+  time?: Record<string, string>
+  isUnpublished: boolean
+  /** Only the version keys, without deserializing version manifests. */
+  versionKeys: Array<string>
 }
 
 export interface NpmOperationalInternal {
