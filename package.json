@@ -54,7 +54,7 @@
     "ready": "yarn build && yarn lint && yarn test",
     "artifacts": "napi artifacts",
     "prebench": "yarn build",
-    "bench": "node benchmark/bench.ts && node benchmark/bench_memory.ts && yarn bench:gc",
+    "bench": "node benchmark/bench.ts && node benchmark/bench_real_case.ts && node benchmark/bench_memory.ts && yarn bench:gc",
     "bench:gc": "yarn bench:gc:add_version && yarn bench:gc:get_property_value",
     "bench:gc:add_version": "GC=1 node benchmark/add_version.ts && GC=1 node benchmark/add_version.ts SonicJSONParse",
     "bench:gc:get_property_value": "GC=1 node benchmark/get_property_value.ts && GC=1 node benchmark/get_property_value.ts SonicJSONParse",

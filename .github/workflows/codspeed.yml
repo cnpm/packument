@@ -56,4 +56,4 @@ jobs:
         uses: CodSpeedHQ/action@fa0c9b1770f933c1bc025c83a9b42946b102f4e6 # v4
         with:
           mode: simulation
-          run: node benchmark/bench.ts
+          run: node benchmark/bench.ts && node benchmark/bench_real_case.ts

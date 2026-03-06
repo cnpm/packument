@@ -17,6 +17,7 @@ Based on [sonic-rs](https://github.com/cloudwego/sonic-rs) to parse JSON efficie
 ## Features
 
 - [x] Parse package metadata from buffer
+- [x] Single-pass metadata extraction (`getMetaInfo`)
 - [x] Diff versions between local and remote
 - [x] Extract version metadata using position
 - [x] Set property without parsing
@@ -59,6 +60,33 @@ console.log(latestVersion)
 const versions = pkg.versions
 console.log(versions)
 ```
+
+### Single-Pass Metadata Extraction (`getMetaInfo`)
+
+When you need multiple top-level fields at once, `getMetaInfo()` extracts them all in a single pass through the JSON document. This is **~2x faster** than reading each field individually, because it avoids re-traversing the JSON for every field access.
+
+```javascript
+import { Package } from '@cnpmjs/packument'
+import { readFileSync } from 'fs'
+
+const buffer = readFileSync('path/to/packument.json')
+const pkg = new Package(buffer)
+
+// One call, one traversal — extracts all common fields at once
+const meta = pkg.getMetaInfo()
+
+console.log(meta.name) // Package name
+console.log(meta.description) // Package description
+console.log(meta.readme) // Package readme
+console.log(meta.distTags) // { latest: '1.0.0', ... }
+console.log(meta.maintainers) // [{ name: 'foo', email: '...' }]
+console.log(meta.repository) // { type: 'git', url: '...' } or string
+console.log(meta.time) // { '1.0.0': '2020-01-01T...', ... }
+console.log(meta.isUnpublished) // false
+console.log(meta.versionKeys) // ['1.0.0', '1.0.1', '1.1.0'] (keys only, no manifests)
+```
+
+The `versionKeys` field extracts only version strings, skipping over the (potentially huge) version manifest objects entirely.
 
 ### Diff Versions Between Local and Remote
 
