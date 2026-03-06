@@ -4,7 +4,7 @@ use napi::bindgen_prelude::*;
 use napi_derive::napi;
 use serde::de::{IgnoredAny, MapAccess, Visitor};
 use serde::{Deserialize, Deserializer};
-use sonic_rs::from_str;
+use sonic_rs::{from_str, JsonValueTrait};
 
 use crate::package::{Human, Repository};
 
@@ -68,8 +68,14 @@ where
                 if key == "unpublished" {
                     map.next_value::<IgnoredAny>()?;
                     is_unpublished = true;
-                } else if let Ok(val) = map.next_value::<String>() {
-                    time_map.insert(key, val);
+                } else {
+                    // Values can be strings or objects (e.g. `unpublished` variants).
+                    // Deserialize as IgnoredAny first to always consume the value,
+                    // then only insert if it was a string.
+                    let val = map.next_value::<sonic_rs::Value>()?;
+                    if let Some(s) = val.as_str() {
+                        time_map.insert(key, s.to_string());
+                    }
                 }
             }
             Ok(TimeResult {
