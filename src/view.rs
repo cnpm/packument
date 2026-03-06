@@ -37,18 +37,10 @@ where
 }
 
 /// Intermediate result from deserializing the `time` object.
+#[derive(Default)]
 struct TimeResult {
     time: Option<HashMap<String, String>>,
     is_unpublished: bool,
-}
-
-impl Default for TimeResult {
-    fn default() -> Self {
-        Self {
-            time: None,
-            is_unpublished: false,
-        }
-    }
 }
 
 /// Time: parse string values + detect `unpublished` key.

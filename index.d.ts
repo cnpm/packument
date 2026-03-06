@@ -75,9 +75,9 @@ export declare class Package {
   /**
    * Get all commonly-needed top-level metadata in a single pass.
    *
-   * Extracts name, description, readme, repository, maintainers,
-   * dist-tags, time, isUnpublished, and version keys in one traversal.
-   * Much faster than accessing each field individually.
+   * Extracts `name`, `description`, `readme`, `repository`, `maintainers`,
+   * `dist-tags`, `time`, `isUnpublished`, and version keys in one traversal.
+   * Much faster than accessing each field individually (~2x).
    */
   getMetaInfo(): MetaInfo
 }
