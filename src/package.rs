@@ -245,9 +245,9 @@ impl<'a> Package<'a> {
 
     /// Get all commonly-needed top-level metadata in a single pass.
     ///
-    /// Extracts name, description, readme, repository, maintainers,
-    /// dist-tags, time, isUnpublished, and version keys in one traversal.
-    /// Much faster than accessing each field individually.
+    /// Extracts `name`, `description`, `readme`, `repository`, `maintainers`,
+    /// `dist-tags`, `time`, `isUnpublished`, and version keys in one traversal.
+    /// Much faster than accessing each field individually (~2x).
     #[napi]
     pub fn get_meta_info(&self) -> Result<view::MetaInfo> {
         view::parse_meta_info(self.root.as_raw_str())
