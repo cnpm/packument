@@ -24,7 +24,7 @@ __metadata:
     oxlint: "npm:^1.31.0"
     oxlint-tsgolint: "npm:^0.11.0"
     prettier: "npm:^3.6.2"
-    tinybench: "npm:^5.1.0"
+    tinybench: "npm:^6.0.0"
     typescript: "npm:^5.9.2"
     vitest: "npm:^4.0.10"
   languageName: unknown
@@ -3676,10 +3676,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinybench@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "tinybench@npm:5.1.0"
-  checksum: 10c0/a9d53204888711c6e67d374b96b9a8a096aac80dda755562de3ed7afa2a39f04abd3cd2a64e401a3f0ece4d49ae20230be0986c733030756bde2f0d56e78cd0f
+"tinybench@npm:^6.0.0":
+  version: 6.1.6
+  resolution: "tinybench@npm:6.1.6"
+  checksum: 10c0/a26e74e5f32f6154935b46d573d94c3f3b8fe1f3e358f5bd00b330aab84f89147d6399fafaef0d2addcd7922a3be0be9a3ef78b626b45e970a4e8f4b9cd1bbe5
   languageName: node
   linkType: hard
 
