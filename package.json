@@ -51,11 +51,11 @@
     "access": "public"
   },
   "scripts": {
-    "ready": "vp run build && vp check && vp test run",
+    "ready": "vp run build && vp check && vp test",
     "artifacts": "napi artifacts",
-    "prebench": "yarn build",
-    "bench": "node benchmark/bench.ts && node benchmark/bench_real_case.ts && node benchmark/bench_memory.ts && yarn bench:gc",
-    "bench:gc": "yarn bench:gc:add_version && yarn bench:gc:get_property_value",
+    "prebench": "vp run build",
+    "bench": "node benchmark/bench.ts && node benchmark/bench_real_case.ts && node benchmark/bench_memory.ts && vp run bench:gc",
+    "bench:gc": "vp run bench:gc:add_version && vp run bench:gc:get_property_value",
     "bench:gc:add_version": "GC=1 node benchmark/add_version.ts && GC=1 node benchmark/add_version.ts SonicJSONParse",
     "bench:gc:get_property_value": "GC=1 node benchmark/get_property_value.ts && GC=1 node benchmark/get_property_value.ts SonicJSONParse",
     "build": "node scripts/tsrs.js && napi build --platform --release --esm",
@@ -65,15 +65,14 @@
     "format:rs": "cargo fmt",
     "lint": "vp lint --type-aware --type-check js",
     "prepublishOnly": "node scripts/tsrs.js && napi prepublish -t npm",
-    "pretest": "yarn build",
-    "test": "vp test run",
+    "pretest": "vp run build",
+    "test": "vp test",
     "preversion": "napi build --platform --esm && git add .",
     "version": "napi version",
-    "prepare": "husky",
+    "prepare": "vp config --no-agent",
     "check": "vp check",
     "format:js": "vp fmt .",
-    "test:consumer": "node scripts/test-consumer.mjs",
-    "test:types": "tsc --noEmit --strict --target ES2022 --module NodeNext --types node __test__/consumer.mts"
+    "test:consumer": "node scripts/test-consumer.mjs"
   },
   "devDependencies": {
     "@codspeed/tinybench-plugin": "^5.0.1",
@@ -87,11 +86,10 @@
     "@tybys/wasm-util": "^0.10.0",
     "@types/node": "^24.10.1",
     "chalk": "^5.6.2",
-    "husky": "^9.1.7",
     "npm-run-all2": "^8.0.4",
     "tinybench": "^5.1.0",
     "tsrs": "0.15.0-ts7.1.0-dev.20260929",
-    "typescript": "^5.9.2",
+    "typescript": "^7.0.2",
     "vite": "catalog:",
     "vite-plus": "catalog:"
   },

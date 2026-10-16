@@ -305,7 +305,7 @@ Cross-compilation flags still work, for example `yarn build --target aarch64-app
 ### Test
 
 After building, run `yarn test` to test the native addon with [Vite+](https://viteplus.dev/guide/test).
-Run `yarn test:consumer` to check the public package entry and `yarn test:types` to check its emitted declarations.
+Run `yarn test:consumer` to check the public package entry. `vp check` checks the library source types.
 
 ### CI
 
@@ -343,12 +343,11 @@ yarn build
 yarn check
 yarn test
 yarn test:consumer
-yarn test:types
 yarn vp run bench
 ```
 
 The local CLI is available through `yarn vp`; a global installation is optional.
-With a global CLI, `vp install` uses the declared Yarn version, and `vp check`, `vp test run`, and `vp pack` use the project's Vite+ version.
+With a global CLI, `vp install` uses the declared Yarn version, and `vp check`, `vp test`, and `vp pack` use the project's Vite+ version.
 `vp pack` provides an alternative build for the JavaScript wrapper and its declarations. Use `vp run build` for the complete native library build.
 
 Use `vp run <task>` for project scripts, such as `vp run bench` or `vp run format`.
@@ -356,7 +355,8 @@ Use `vp run <task>` for project scripts, such as `vp run bench` or `vp run forma
 `vp dev` starts Vite's web development server; this native library has no web application or dev-server task.
 
 Formatting and lint configuration lives in `vite.config.ts`. `yarn format` runs Oxfmt, `cargo fmt`, and Taplo.
-Husky runs `vp staged` with the existing JavaScript, Rust, and TOML checks. JSON fixtures retain their original bytes.
+`vp hooks` runs `vp staged` with the existing JavaScript, Rust, and TOML checks. JSON fixtures retain their original bytes.
+For an existing clone that uses Husky, run `git config --unset core.hooksPath`, then `vp hooks enable` to switch its hook dispatcher.
 
 ## Release package
 
