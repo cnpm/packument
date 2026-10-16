@@ -310,8 +310,9 @@ Run `yarn test:consumer` to check the public package entry and `yarn test:types`
 ### CI
 
 GitHub Actions builds and tests native bindings on macOS, Linux, and Windows.
-Vitest runs on Node.js 22 and 24; the Node.js 20 jobs use Node.js 24 for Vitest, then check the built package with Node.js 20.
-Consumer checks run on all three Node.js versions. The published library continues to support Node.js 20 and later.
+`setup-vp` installs Vite+, Node.js, Yarn, and project dependencies.
+Vitest and package consumer checks run on Node.js 22 and 24.
+The published library continues to support Node.js 20 and later.
 
 ### Release
 
@@ -329,7 +330,7 @@ In this package, we choose a better way to solve this problem. We release differ
 
 - Install stable Rust.
 - Use Node.js 24.22.0 from `.node-version` for development. The Vite+ toolchain requires Node.js `^22.18.0 || ^24.11.0 || >=26.0.0`.
-- Use Yarn 4.12.0, as declared in `packageManager`.
+- Use Yarn 4.18.1, as declared in `packageManager`.
 - Install GNU time (`brew install gnu-time` on macOS) to run the memory benchmarks.
 
 Builds use `scripts/tsrs.js` to compile TypeScript before building the Rust bindings. The script uses native `tsrs` where available and WebAssembly on other platforms, including Windows.
