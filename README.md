@@ -310,8 +310,8 @@ Run `yarn test:consumer` to check the public package entry and `yarn test:types`
 ### CI
 
 GitHub Actions builds and tests native bindings on macOS, Linux, and Windows.
-`setup-vp` installs Vite+, Node.js, Yarn, and project dependencies.
-Vitest and package consumer checks run on Node.js 22 and 24.
+`setup-vp` reads the Vite+ version from the project catalog and the Node.js version from `.node-version`.
+Vitest, package consumer checks, and Linux Docker images use that Node.js version.
 The published library continues to support Node.js 20 and later.
 
 ### Release

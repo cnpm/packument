@@ -49,8 +49,6 @@ jobs:
       - name: Setup Vite+
         uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
-          version: 1.1.0
-          node-version: 24
           # Master builds can publish packages, so they must not restore CI caches.
           cache: ${{ github.event_name != 'push' }}
       - name: Install
@@ -99,7 +97,7 @@ jobs:
           - host: windows-latest
             target: aarch64-pc-windows-msvc
             build: yarn build --target aarch64-pc-windows-msvc
-    name: stable - ${{ matrix.settings.target }} - node@24
+    name: stable - ${{ matrix.settings.target }}
     runs-on: ${{ matrix.settings.host }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -108,8 +106,6 @@ jobs:
       - name: Setup Vite+
         uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
-          version: 1.1.0
-          node-version: 24
           cache: ${{ github.event_name != 'push' }}
       - name: Install
         uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
@@ -152,7 +148,7 @@ jobs:
             ${{ env.APP_NAME }}.*.wasm
           if-no-files-found: error
   test-macOS-windows-binding:
-    name: Test bindings on ${{ matrix.settings.target }} - node@${{ matrix.node }}
+    name: Test bindings on ${{ matrix.settings.target }}
     permissions:
       contents: read
     needs:
@@ -169,9 +165,6 @@ jobs:
             target: aarch64-apple-darwin
           - host: macos-15-intel
             target: x86_64-apple-darwin
-        node:
-          - '22'
-          - '24'
     runs-on: ${{ matrix.settings.host }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -180,8 +173,6 @@ jobs:
       - name: Setup Vite+
         uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
-          version: 1.1.0
-          node-version: ${{ matrix.node }}
           cache: ${{ github.event_name != 'push' }}
       - name: Download artifacts
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
@@ -198,7 +189,7 @@ jobs:
       - name: Test package consumer
         run: node scripts/test-consumer.mjs
   test-linux-binding:
-    name: Test ${{ matrix.target }} - node@${{ matrix.node }}
+    name: Test ${{ matrix.target }}
     permissions:
       contents: read
     needs:
@@ -211,9 +202,6 @@ jobs:
           - x86_64-unknown-linux-musl
           - aarch64-unknown-linux-gnu
           - aarch64-unknown-linux-musl
-        node:
-          - '22'
-          - '24'
     runs-on: ${{ contains(matrix.target, 'aarch64') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -222,8 +210,6 @@ jobs:
       - name: Setup Vite+
         uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
-          version: 1.1.0
-          node-version: ${{ matrix.node }}
           # Configure cross-platform packages before installing dependencies.
           run-install: false
           cache: ${{ github.event_name != 'push' }}
@@ -241,9 +227,9 @@ jobs:
           " >> "$GITHUB_OUTPUT"
           node -e "
             if ('${{ matrix.target }}'.endsWith('-musl')) {
-              console.log('IMAGE=node:${{ matrix.node }}-alpine')
+              console.log('IMAGE=node:' + process.versions.node + '-alpine')
             } else {
-              console.log('IMAGE=node:${{ matrix.node }}-slim')
+              console.log('IMAGE=node:' + process.versions.node + '-slim')
             }
           " >> "$GITHUB_OUTPUT"
       - name: Install dependencies
@@ -306,9 +292,6 @@ jobs:
           persist-credentials: false
       - name: Setup Vite+
         uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
-        with:
-          version: 1.1.0
-          node-version: 24
       - name: create npm dirs
         run: yarn napi create-npm-dirs
       - name: Download all artifacts

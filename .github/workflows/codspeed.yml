@@ -27,8 +27,6 @@ jobs:
       - name: Setup Vite+
         uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
-          version: 1.1.0
-          node-version: 24
           cache: true
 
       - name: Install Rust
