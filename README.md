@@ -298,15 +298,20 @@ Memory Usage:
 
 ### Build
 
-After `npm run build` command, you can see `packument.[darwin|win32|linux].node` file in project root. This is the native addon built from [lib.rs](./src/lib.rs).
+Run `yarn build` (or `vp run build`) to compile the JavaScript wrapper with `tsrs` and build the native addon with `napi`.
+The wrapper and its declarations stay in `js/`. The `packument.[darwin|win32|linux].node` file in the project root is built from [lib.rs](./src/lib.rs).
+Cross-compilation flags still work, for example `yarn build --target aarch64-apple-darwin`.
 
 ### Test
 
-With [vitest](https://vitest.dev/), run `npm test` to testing native addon.
+After building, run `yarn test` to test the native addon with [Vite+](https://viteplus.dev/guide/test).
+Run `yarn test:consumer` to check the public package entry and `yarn test:types` to check its emitted declarations.
 
 ### CI
 
-With GitHub Actions, each commit and pull request will be built and tested automatically in [`node@20`, `@node22`] x [`macOS`, `Linux`, `Windows`] matrix. You will never be afraid of the native addon broken in these platforms.
+GitHub Actions builds and tests native bindings on macOS, Linux, and Windows.
+Vitest runs on Node.js 22 and 24; the Node.js 20 jobs use Node.js 24 for Vitest, then check the built package with Node.js 20.
+Consumer checks run on all three Node.js versions. The published library continues to support Node.js 20 and later.
 
 ### Release
 
@@ -322,17 +327,35 @@ In this package, we choose a better way to solve this problem. We release differ
 
 ## Develop requirements
 
-- Install the latest `Rust`
-- Use Node.js 24 for development, as in CI. The published package supports Node.js 20 and later.
-- Use Yarn `4.12.0`, as specified in `packageManager`.
+- Install stable Rust.
+- Use Node.js 24.22.0 from `.node-version` for development. The Vite+ toolchain requires Node.js `^22.18.0 || ^24.11.0 || >=26.0.0`.
+- Use Yarn 4.12.0, as declared in `packageManager`.
+- Install GNU time (`brew install gnu-time` on macOS) to run the memory benchmarks.
 
 Builds use `scripts/tsrs.js` to compile TypeScript before building the Rust bindings. The script uses native `tsrs` where available and WebAssembly on other platforms, including Windows.
 
 ## Test in local
 
-- yarn
-- yarn build
-- yarn test
+```bash
+yarn install
+yarn build
+yarn check
+yarn test
+yarn test:consumer
+yarn test:types
+yarn vp run bench
+```
+
+The local CLI is available through `yarn vp`; a global installation is optional.
+With a global CLI, `vp install` uses the declared Yarn version, and `vp check`, `vp test run`, and `vp pack` use the project's Vite+ version.
+`vp pack` provides an alternative build for the JavaScript wrapper and its declarations. Use `vp run build` for the complete native library build.
+
+Use `vp run <task>` for project scripts, such as `vp run bench` or `vp run format`.
+`vp test` runs the built-in test runner, while `vp run test` runs the package's test script.
+`vp dev` starts Vite's web development server; this native library has no web application or dev-server task.
+
+Formatting and lint configuration lives in `vite.config.ts`. `yarn format` runs Oxfmt, `cargo fmt`, and Taplo.
+Husky runs `vp staged` with the existing JavaScript, Rust, and TOML checks. JSON fixtures retain their original bytes.
 
 ## Release package
 

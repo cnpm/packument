@@ -60,8 +60,8 @@ jobs:
           components: clippy, rustfmt
       - name: Install dependencies
         run: yarn install
-      - name: Oxlint
-        run: yarn lint
+      - name: Vite+ checks
+        run: yarn check
       - name: Cargo fmt
         run: cargo fmt -- --check
       - name: Clippy
@@ -189,7 +189,8 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
-          node-version: ${{ matrix.node }}
+          # Vitest 5 needs Node 22.18+; Node 20 is checked as a package consumer below.
+          node-version: ${{ matrix.node == '20' && '24' || matrix.node }}
           cache: ${{ github.event_name != 'push' && 'yarn' || '' }}
           package-manager-cache: false
           architecture: ${{ matrix.settings.architecture }}
@@ -203,8 +204,18 @@ jobs:
       - name: List packages
         run: ls -R .
         shell: bash
+      - name: Build JavaScript and check declarations
+        run: yarn vp pack && yarn test:types
       - name: Test bindings
         run: yarn test
+      - name: Setup consumer Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: ${{ matrix.node }}
+          architecture: ${{ matrix.settings.architecture }}
+          package-manager-cache: false
+      - name: Test package consumer
+        run: node scripts/test-consumer.mjs
   test-linux-binding:
     name: Test ${{ matrix.target }} - node@${{ matrix.node }}
     permissions:
@@ -231,7 +242,8 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
-          node-version: ${{ matrix.node }}
+          # Vitest 5 needs Node 22.18+; Node 20 is checked as a package consumer below.
+          node-version: ${{ matrix.node == '20' && '24' || matrix.node }}
           cache: ${{ github.event_name != 'push' && 'yarn' || '' }}
           package-manager-cache: false
       - name: Output docker params
@@ -249,8 +261,10 @@ jobs:
           node -e "
             if ('${{ matrix.target }}'.endsWith('-musl')) {
               console.log('IMAGE=node:${{ matrix.node }}-alpine')
+              console.log('TEST_IMAGE=node:${{ matrix.node == '20' && '24' || matrix.node }}-alpine')
             } else {
               console.log('IMAGE=node:${{ matrix.node }}-slim')
+              console.log('TEST_IMAGE=node:${{ matrix.node == '20' && '24' || matrix.node }}-slim')
             }
           " >> "$GITHUB_OUTPUT"
       - name: Install dependencies
@@ -273,7 +287,19 @@ jobs:
           platforms: all
       - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
         if: ${{ contains(matrix.target, 'armv7') }}
+      - name: Build JavaScript and check declarations
+        run: yarn vp pack && yarn test:types
       - name: Test bindings
+        env:
+          DOCKER_IMAGE: ${{ steps.docker.outputs.TEST_IMAGE }}
+          DOCKER_PLATFORM: ${{ steps.docker.outputs.PLATFORM }}
+        run: |
+          docker run --rm \
+            --volume "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
+            --workdir "$GITHUB_WORKSPACE" \
+            --platform "$DOCKER_PLATFORM" \
+            --entrypoint sh "$DOCKER_IMAGE" -c 'yarn test'
+      - name: Test package consumer
         env:
           DOCKER_IMAGE: ${{ steps.docker.outputs.IMAGE }}
           DOCKER_PLATFORM: ${{ steps.docker.outputs.PLATFORM }}
@@ -282,7 +308,7 @@ jobs:
             --volume "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
             --workdir "$GITHUB_WORKSPACE" \
             --platform "$DOCKER_PLATFORM" \
-            --entrypoint sh "$DOCKER_IMAGE" -c 'yarn test'
+            --entrypoint node "$DOCKER_IMAGE" scripts/test-consumer.mjs
   publish:
     name: Publish
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'

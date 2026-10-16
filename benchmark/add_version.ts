@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { JSONBuilder } from '../js/index.js'
 
-import { getGCStats } from './gc.js'
+import { getGCStats } from './gc.ts'
 
 const method = process.argv[2] || 'JSONParse'
 const filename = process.argv[3] || '@primer/react.json'

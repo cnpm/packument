@@ -1,7 +1,7 @@
 import path from 'node:path'
 import fs from 'node:fs'
 
-import { test, expect } from 'vitest'
+import { test, expect } from 'vite-plus/test'
 
 import { JSONBuilder } from '../js/index.js'
 

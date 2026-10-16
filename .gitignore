@@ -130,3 +130,4 @@ dist
 
 js/*.d.ts
 js/*.js
+.vitest/

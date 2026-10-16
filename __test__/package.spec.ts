@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { test, expect } from 'vitest'
+import { test, expect } from 'vite-plus/test'
 
 import { Package } from '../js/package.js'
 
@@ -166,7 +166,7 @@ test('should get _npmUser from version', () => {
   expect(version._npmUser).toBeTruthy()
   expect(version._npmUser.name).toBe('adlanelm')
   expect(version._npmUser.email).toBe('adlan.elm@gmail.com')
-  
+
   // Also test via the typed interface
   const latestVersion = pkg.getLatestVersion()
   if (latestVersion && latestVersion.npmUser) {
@@ -195,7 +195,7 @@ test('should handle missing _npmUser field', () => {
   const latestVersion = pkgWithoutNpmUser.getLatestVersion()
   expect(latestVersion).toBeTruthy()
   expect(latestVersion!.npmUser).toBeUndefined()
-  
+
   // Also test via raw JSON access
   const version = pkgWithoutNpmUser.getIn<any>(['versions', '1.0.0'])
   expect(version._npmUser).toBeUndefined()
