@@ -41,7 +41,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@cnpmjs/packument@workspace:."
   dependencies:
-    "@codspeed/tinybench-plugin": "npm:^5.0.1"
+    "@codspeed/tinybench-plugin": "npm:^6.0.0"
     "@e18e/eslint-plugin": "npm:^0.8.1"
     "@emnapi/core": "npm:^1.5.0"
     "@emnapi/runtime": "npm:^1.5.0"
@@ -61,27 +61,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@codspeed/core@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "@codspeed/core@npm:5.0.1"
+"@codspeed/core@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "@codspeed/core@npm:6.1.0"
   dependencies:
     axios: "npm:^1.4.0"
-    find-up: "npm:^6.3.0"
     form-data: "npm:^4.0.4"
     node-gyp-build: "npm:^4.6.0"
-  checksum: 10c0/2a05b9c1a1007797fb4b0feecce8980052bd9415bc52e8a4cdc7440c4a9151c29799d48bd9380ff1bf8745987b3bba09d1b83034e1c82d921ef2bfc824ae9e0e
+    stack-trace: "npm:1.0.0-pre2"
+  checksum: 10c0/f45c4115501ab6ab74beb0175c43ed23d87f06b4acac696ba74bbbaf83d60e95bb12f119470f8a25186c51e74d503246d836ddadaadadccb4770a9ae70cfe396
   languageName: node
   linkType: hard
 
-"@codspeed/tinybench-plugin@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "@codspeed/tinybench-plugin@npm:5.0.1"
+"@codspeed/tinybench-plugin@npm:^6.0.0":
+  version: 6.1.0
+  resolution: "@codspeed/tinybench-plugin@npm:6.1.0"
   dependencies:
-    "@codspeed/core": "npm:^5.0.1"
-    stack-trace: "npm:1.0.0-pre2"
+    "@codspeed/core": "npm:^6.1.0"
   peerDependencies:
     tinybench: ">=4.0.1"
-  checksum: 10c0/6fc4647fe892e7c5304ddedcb4afc5d6de182f5cc64dc70d40346ebf934e4221aa1881efbc40b425b094efd7041ad5a26b8b937ec19ea80d27b99a62e559c16a
+  checksum: 10c0/98e9874d3cd26cad060b646d5758058733a9951269fa3510196e22368902703a49262fcb89806da6644d02848172da0a303c9e2d1977632a733e775b3d33fc76
   languageName: node
   linkType: hard
 
@@ -2663,16 +2662,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"find-up@npm:^6.3.0":
-  version: 6.3.0
-  resolution: "find-up@npm:6.3.0"
-  dependencies:
-    locate-path: "npm:^7.1.0"
-    path-exists: "npm:^5.0.0"
-  checksum: 10c0/07e0314362d316b2b13f7f11ea4692d5191e718ca3f7264110127520f3347996349bf9e16805abae3e196805814bc66ef4bff2b8904dc4a6476085fc9b0eba07
-  languageName: node
-  linkType: hard
-
 "find-up@npm:^7.0.0":
   version: 7.0.0
   resolution: "find-up@npm:7.0.0"
@@ -3077,7 +3066,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"locate-path@npm:^7.1.0, locate-path@npm:^7.2.0":
+"locate-path@npm:^7.2.0":
   version: 7.2.0
   resolution: "locate-path@npm:7.2.0"
   dependencies:
