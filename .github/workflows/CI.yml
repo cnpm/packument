@@ -46,22 +46,18 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - name: Setup node
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
-          node-version: 24
           # Master builds can publish packages, so they must not restore CI caches.
-          cache: ${{ github.event_name != 'push' && 'yarn' || '' }}
-          package-manager-cache: false
+          cache: ${{ github.event_name != 'push' }}
       - name: Install
         uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
           toolchain: stable
           components: clippy, rustfmt
-      - name: Install dependencies
-        run: yarn install
-      - name: Oxlint
-        run: yarn lint
+      - name: Vite+ checks
+        run: vp check
       - name: Cargo fmt
         run: cargo fmt -- --check
       - name: Clippy
@@ -79,40 +75,38 @@ jobs:
         settings:
           - host: macos-latest
             target: x86_64-apple-darwin
-            build: yarn build --target x86_64-apple-darwin
+            build: vp run build --target x86_64-apple-darwin
           - host: windows-latest
-            build: yarn build --target x86_64-pc-windows-msvc
+            build: vp run build --target x86_64-pc-windows-msvc
             target: x86_64-pc-windows-msvc
           - host: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            build: yarn build --target x86_64-unknown-linux-gnu --use-napi-cross
+            build: vp run build --target x86_64-unknown-linux-gnu --use-napi-cross
           - host: ubuntu-latest
             target: x86_64-unknown-linux-musl
-            build: yarn build --target x86_64-unknown-linux-musl -x
+            build: vp run build --target x86_64-unknown-linux-musl -x
           - host: macos-latest
             target: aarch64-apple-darwin
-            build: yarn build --target aarch64-apple-darwin
+            build: vp run build --target aarch64-apple-darwin
           - host: ubuntu-latest
             target: aarch64-unknown-linux-gnu
-            build: yarn build --target aarch64-unknown-linux-gnu --use-napi-cross
+            build: vp run build --target aarch64-unknown-linux-gnu --use-napi-cross
           - host: ubuntu-latest
             target: aarch64-unknown-linux-musl
-            build: yarn build --target aarch64-unknown-linux-musl -x
+            build: vp run build --target aarch64-unknown-linux-musl -x
           - host: windows-latest
             target: aarch64-pc-windows-msvc
-            build: yarn build --target aarch64-pc-windows-msvc
-    name: stable - ${{ matrix.settings.target }} - node@24
+            build: vp run build --target aarch64-pc-windows-msvc
+    name: stable - ${{ matrix.settings.target }}
     runs-on: ${{ matrix.settings.host }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - name: Setup node
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
-          node-version: 24
-          cache: ${{ github.event_name != 'push' && 'yarn' || '' }}
-          package-manager-cache: false
+          cache: ${{ github.event_name != 'push' }}
       - name: Install
         uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
@@ -142,8 +136,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           tool: cargo-zigbuild
-      - name: Install dependencies
-        run: yarn install
       - name: Build
         run: ${{ matrix.settings.build }}
         shell: bash
@@ -156,7 +148,7 @@ jobs:
             ${{ env.APP_NAME }}.*.wasm
           if-no-files-found: error
   test-macOS-windows-binding:
-    name: Test bindings on ${{ matrix.settings.target }} - node@${{ matrix.node }}
+    name: Test bindings on ${{ matrix.settings.target }}
     permissions:
       contents: read
     needs:
@@ -167,34 +159,21 @@ jobs:
         settings:
           - host: windows-latest
             target: x86_64-pc-windows-msvc
-            architecture: x64
           - host: windows-11-arm
             target: aarch64-pc-windows-msvc
-            architecture: arm64
           - host: macos-latest
             target: aarch64-apple-darwin
-            architecture: arm64
-          - host: macos-latest
+          - host: macos-15-intel
             target: x86_64-apple-darwin
-            architecture: x64
-        node:
-          - '20'
-          - '22'
-          - '24'
     runs-on: ${{ matrix.settings.host }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - name: Setup node
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
-          node-version: ${{ matrix.node }}
-          cache: ${{ github.event_name != 'push' && 'yarn' || '' }}
-          package-manager-cache: false
-          architecture: ${{ matrix.settings.architecture }}
-      - name: Install dependencies
-        run: yarn install
+          cache: ${{ github.event_name != 'push' }}
       - name: Download artifacts
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
@@ -203,10 +182,14 @@ jobs:
       - name: List packages
         run: ls -R .
         shell: bash
+      - name: Build JavaScript and declarations
+        run: vp pack
       - name: Test bindings
-        run: yarn test
+        run: vp test
+      - name: Test package consumer
+        run: node scripts/test-consumer.mjs
   test-linux-binding:
-    name: Test ${{ matrix.target }} - node@${{ matrix.node }}
+    name: Test ${{ matrix.target }}
     permissions:
       contents: read
     needs:
@@ -219,21 +202,17 @@ jobs:
           - x86_64-unknown-linux-musl
           - aarch64-unknown-linux-gnu
           - aarch64-unknown-linux-musl
-        node:
-          - '20'
-          - '22'
-          - '24'
     runs-on: ${{ contains(matrix.target, 'aarch64') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - name: Setup node
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
-          node-version: ${{ matrix.node }}
-          cache: ${{ github.event_name != 'push' && 'yarn' || '' }}
-          package-manager-cache: false
+          # Configure cross-platform packages before installing dependencies.
+          run-install: false
+          cache: ${{ github.event_name != 'push' }}
       - name: Output docker params
         id: docker
         run: |
@@ -248,16 +227,16 @@ jobs:
           " >> "$GITHUB_OUTPUT"
           node -e "
             if ('${{ matrix.target }}'.endsWith('-musl')) {
-              console.log('IMAGE=node:${{ matrix.node }}-alpine')
+              console.log('IMAGE=node:' + process.versions.node + '-alpine')
             } else {
-              console.log('IMAGE=node:${{ matrix.node }}-slim')
+              console.log('IMAGE=node:' + process.versions.node + '-slim')
             }
           " >> "$GITHUB_OUTPUT"
       - name: Install dependencies
         run: |
-          yarn config set --json supportedArchitectures.cpu '["current", "arm64", "x64", "arm"]'
-          yarn config set --json supportedArchitectures.libc '["current", "musl", "gnu"]'
-          yarn install
+          vp pm config set --json supportedArchitectures.cpu '["current", "arm64", "x64", "arm"]'
+          vp pm config set --json supportedArchitectures.libc '["current", "musl", "glibc"]'
+          vp install
       - name: Download artifacts
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
@@ -273,7 +252,10 @@ jobs:
           platforms: all
       - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
         if: ${{ contains(matrix.target, 'armv7') }}
+      - name: Build JavaScript and declarations
+        run: vp pack
       - name: Test bindings
+        # Node images use the project CLI from the mounted node_modules.
         env:
           DOCKER_IMAGE: ${{ steps.docker.outputs.IMAGE }}
           DOCKER_PLATFORM: ${{ steps.docker.outputs.PLATFORM }}
@@ -282,7 +264,18 @@ jobs:
             --volume "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
             --workdir "$GITHUB_WORKSPACE" \
             --platform "$DOCKER_PLATFORM" \
-            --entrypoint sh "$DOCKER_IMAGE" -c 'yarn test'
+            --env CI=true \
+            --entrypoint sh "$DOCKER_IMAGE" -c 'PATH="$PWD/node_modules/.bin:$PATH" vp test'
+      - name: Test package consumer
+        env:
+          DOCKER_IMAGE: ${{ steps.docker.outputs.IMAGE }}
+          DOCKER_PLATFORM: ${{ steps.docker.outputs.PLATFORM }}
+        run: |
+          docker run --rm \
+            --volume "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
+            --workdir "$GITHUB_WORKSPACE" \
+            --platform "$DOCKER_PLATFORM" \
+            --entrypoint node "$DOCKER_IMAGE" scripts/test-consumer.mjs
   publish:
     name: Publish
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -299,21 +292,16 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - name: Setup node
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
-        with:
-          node-version: 24
-          package-manager-cache: false
-      - name: Install dependencies
-        run: yarn install
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
       - name: create npm dirs
-        run: yarn napi create-npm-dirs
+        run: vp exec napi create-npm-dirs
       - name: Download all artifacts
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           path: artifacts
       - name: Move artifacts
-        run: yarn artifacts
+        run: vp run artifacts
       - name: List packages
         run: ls -R ./npm
         shell: bash

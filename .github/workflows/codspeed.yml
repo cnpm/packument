@@ -24,11 +24,10 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup node
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
-          node-version: 24
-          cache: yarn
+          cache: true
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
@@ -48,11 +47,8 @@ jobs:
             target/
           key: x86_64-unknown-linux-gnu-cargo-ubuntu-latest-codspeed-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Install dependencies
-        run: yarn install
-
       - name: Build native addon
-        run: yarn build --target x86_64-unknown-linux-gnu --use-napi-cross
+        run: vp run build --target x86_64-unknown-linux-gnu --use-napi-cross
 
       - name: Run benchmarks
         uses: CodSpeedHQ/action@f22792bfac16f3e14eb9fbea76f4a48e9cc22b93 # v4

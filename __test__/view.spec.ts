@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { test, expect, describe } from 'vitest'
+import { test, expect, describe } from 'vite-plus/test'
 
 import { Package } from '../js/package.js'
 

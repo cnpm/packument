@@ -11,6 +11,6 @@
     "allowSyntheticDefaultImports": true,
     "declaration": true
   },
-  "include": ["."],
+  "include": ["js"],
   "exclude": ["node_modules", "benchmark", "__test__"]
 }

@@ -27,11 +27,10 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - name: Setup node
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
-          node-version: 24
-          cache: yarn
+          cache: true
       - name: Install Rust
         uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
@@ -48,14 +47,12 @@ jobs:
             .cargo-cache
             target/
           key: x86_64-unknown-linux-gnu-cargo-ubuntu-latest-benchmark-${{ hashFiles('**/Cargo.lock') }}
-      - name: Install dependencies
-        run: yarn install
       - name: Build
-        run: yarn build --target x86_64-unknown-linux-gnu --use-napi-cross
+        run: vp run build --target x86_64-unknown-linux-gnu --use-napi-cross
       - name: Run benchmarks and create comment
         run: |
           echo "Running benchmarks..."
-          yarn bench 2>&1 | tee benchmark-output.txt
+          vp run bench 2>&1 | tee benchmark-output.txt
 
           echo "## ⚡ Benchmark Results" >> comment.md
           echo "" >> comment.md
