@@ -323,8 +323,10 @@ In this package, we choose a better way to solve this problem. We release differ
 ## Develop requirements
 
 - Install the latest `Rust`
-- Install `Node.js@10+` which fully supported `Node-API`
-- Install `yarn@1.x`
+- Use Node.js 24 for development, as in CI. The published package supports Node.js 20 and later.
+- Use Yarn `4.12.0`, as specified in `packageManager`.
+
+Builds use `scripts/tsrs.js` to compile TypeScript before building the Rust bindings. The script uses native `tsrs` where available and WebAssembly on other platforms, including Windows.
 
 ## Test in local
 

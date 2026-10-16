@@ -16,6 +16,7 @@ __metadata:
     "@napi-rs/cli": "npm:^3.2.0"
     "@oxc-node/core": "npm:^0.0.35"
     "@taplo/cli": "npm:^0.7.0"
+    "@ts-rs/wasm": "npm:0.15.0-ts7.1.0-dev.20260929"
     "@tybys/wasm-util": "npm:^0.10.0"
     "@types/node": "npm:^24.10.1"
     chalk: "npm:^5.6.2"
@@ -26,7 +27,7 @@ __metadata:
     oxlint-tsgolint: "npm:^7.0.2004"
     prettier: "npm:^3.6.2"
     tinybench: "npm:^5.1.0"
-    typescript: "npm:^5.9.2"
+    tsrs: "npm:0.15.0-ts7.1.0-dev.20260929"
     vitest: "npm:^4.0.10"
   languageName: unknown
   linkType: soft
@@ -1830,6 +1831,50 @@ __metadata:
   bin:
     taplo: dist/cli.js
   checksum: 10c0/c5a9a34502335731e405547fe24ba1a2f867fccdf8abe4d13e261e30fad6c18a2773a961981206166fde0c85b19accef40381c189c8c6ed4952c5b082c1d4996
+  languageName: node
+  linkType: hard
+
+"@ts-rs/darwin-arm64@npm:0.15.0-ts7.1.0-dev.20260929":
+  version: 0.15.0-ts7.1.0-dev.20260929
+  resolution: "@ts-rs/darwin-arm64@npm:0.15.0-ts7.1.0-dev.20260929"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@ts-rs/linux-arm64-gnu@npm:0.15.0-ts7.1.0-dev.20260929":
+  version: 0.15.0-ts7.1.0-dev.20260929
+  resolution: "@ts-rs/linux-arm64-gnu@npm:0.15.0-ts7.1.0-dev.20260929"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@ts-rs/linux-arm64-musl@npm:0.15.0-ts7.1.0-dev.20260929":
+  version: 0.15.0-ts7.1.0-dev.20260929
+  resolution: "@ts-rs/linux-arm64-musl@npm:0.15.0-ts7.1.0-dev.20260929"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@ts-rs/linux-x64-gnu@npm:0.15.0-ts7.1.0-dev.20260929":
+  version: 0.15.0-ts7.1.0-dev.20260929
+  resolution: "@ts-rs/linux-x64-gnu@npm:0.15.0-ts7.1.0-dev.20260929"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@ts-rs/linux-x64-musl@npm:0.15.0-ts7.1.0-dev.20260929":
+  version: 0.15.0-ts7.1.0-dev.20260929
+  resolution: "@ts-rs/linux-x64-musl@npm:0.15.0-ts7.1.0-dev.20260929"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@ts-rs/wasm@npm:0.15.0-ts7.1.0-dev.20260929":
+  version: 0.15.0-ts7.1.0-dev.20260929
+  resolution: "@ts-rs/wasm@npm:0.15.0-ts7.1.0-dev.20260929"
+  bin:
+    tsrs-wasm: bin/tsrs-wasm.js
+  checksum: 10c0/79c0a6d58ec528f6e1fe2079bf044c03e808ea1f07c49848a795542d5e204447a7f6f9d0c9e6b8f785bd4912de618ff18b786d2f14b1e99ebfa070c4f9f1eab3
   languageName: node
   linkType: hard
 
@@ -3869,6 +3914,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tsrs@npm:0.15.0-ts7.1.0-dev.20260929":
+  version: 0.15.0-ts7.1.0-dev.20260929
+  resolution: "tsrs@npm:0.15.0-ts7.1.0-dev.20260929"
+  dependencies:
+    "@ts-rs/darwin-arm64": "npm:0.15.0-ts7.1.0-dev.20260929"
+    "@ts-rs/linux-arm64-gnu": "npm:0.15.0-ts7.1.0-dev.20260929"
+    "@ts-rs/linux-arm64-musl": "npm:0.15.0-ts7.1.0-dev.20260929"
+    "@ts-rs/linux-x64-gnu": "npm:0.15.0-ts7.1.0-dev.20260929"
+    "@ts-rs/linux-x64-musl": "npm:0.15.0-ts7.1.0-dev.20260929"
+  dependenciesMeta:
+    "@ts-rs/darwin-arm64":
+      optional: true
+    "@ts-rs/linux-arm64-gnu":
+      optional: true
+    "@ts-rs/linux-arm64-musl":
+      optional: true
+    "@ts-rs/linux-x64-gnu":
+      optional: true
+    "@ts-rs/linux-x64-musl":
+      optional: true
+  bin:
+    tsrs: ./bin/tsrs
+  checksum: 10c0/d86e5efb2364ee264725adc597377eed2d892746fc128756b9100788940bcc53203fb6bf284bf55676d2b7bc5c12bf02e0b00a235af44e527e892c5d5edd8e5e
+  languageName: node
+  linkType: hard
+
 "typanion@npm:^3.14.0, typanion@npm:^3.8.0":
   version: 3.14.0
   resolution: "typanion@npm:3.14.0"
@@ -3880,26 +3951,6 @@ __metadata:
   version: 0.21.3
   resolution: "type-fest@npm:0.21.3"
   checksum: 10c0/902bd57bfa30d51d4779b641c2bc403cdf1371fb9c91d3c058b0133694fcfdb817aef07a47f40faf79039eecbaa39ee9d3c532deff244f3a19ce68cea71a61e8
-  languageName: node
-  linkType: hard
-
-"typescript@npm:^5.9.2":
-  version: 5.9.2
-  resolution: "typescript@npm:5.9.2"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/cd635d50f02d6cf98ed42de2f76289701c1ec587a363369255f01ed15aaf22be0813226bff3c53e99d971f9b540e0b3cc7583dbe05faded49b1b0bed2f638a18
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A^5.9.2#optional!builtin<compat/typescript>":
-  version: 5.9.2
-  resolution: "typescript@patch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=5786d5"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/34d2a8e23eb8e0d1875072064d5e1d9c102e0bdce56a10a25c0b917b8aa9001a9cf5c225df12497e99da107dc379360bc138163c66b55b95f5b105b50578067e
   languageName: node
   linkType: hard
 
