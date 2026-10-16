@@ -85,7 +85,7 @@
     "@ts-rs/wasm": "0.15.0-ts7.1.0-dev.20260929",
     "@tybys/wasm-util": "^0.10.0",
     "@types/node": "^24.10.1",
-    "chalk": "^5.6.2",
+    "chalk": "^6.0.0",
     "npm-run-all2": "^8.0.4",
     "tinybench": "^5.1.0",
     "tsrs": "0.15.0-ts7.1.0-dev.20260929",
