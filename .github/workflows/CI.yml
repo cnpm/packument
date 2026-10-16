@@ -10,8 +10,6 @@ env:
   push:
     branches:
       - master
-    tags-ignore:
-      - '**'
     paths-ignore:
       - '**/*.md'
       - LICENSE
@@ -26,20 +24,37 @@ concurrency:
   cancel-in-progress: ${{ github.ref_name != 'main' }}
 
 jobs:
+  zizmor:
+    name: Audit GitHub Actions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Run zizmor
+        uses: zizmorcore/zizmor-action@85b2b9fb8e3325e7a23d7d0a9d7ba5ae0f999e3e # v0.7.1
+        with:
+          advanced-security: false
+          annotations: true
   lint:
     permissions:
       contents: read
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
       - name: Setup node
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24
-          cache: yarn
+          # Master builds can publish packages, so they must not restore CI caches.
+          cache: ${{ github.event_name != 'push' && 'yarn' || '' }}
+          package-manager-cache: false
       - name: Install
-        uses: dtolnay/rust-toolchain@f7ccc83f9ed1e5b9c81d8a67d7ad1a747e22a561 # stable
+        uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
           toolchain: stable
           components: clippy, rustfmt
@@ -89,19 +104,23 @@ jobs:
     name: stable - ${{ matrix.settings.target }} - node@24
     runs-on: ${{ matrix.settings.host }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
       - name: Setup node
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24
-          cache: yarn
+          cache: ${{ github.event_name != 'push' && 'yarn' || '' }}
+          package-manager-cache: false
       - name: Install
-        uses: dtolnay/rust-toolchain@f7ccc83f9ed1e5b9c81d8a67d7ad1a747e22a561 # stable
+        uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
           toolchain: stable
           targets: ${{ matrix.settings.target }}
       - name: Cache cargo
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
+        if: github.event_name != 'push'
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           path: |
             ~/.cargo/registry/index/
@@ -115,6 +134,7 @@ jobs:
         if: ${{ contains(matrix.settings.target, 'musl') }}
         with:
           version: 0.14.1
+          use-cache: ${{ github.event_name != 'push' }}
       - name: Install cargo-zigbuild
         uses: taiki-e/install-action@1168f6810a3cb30a3514bf5756a3b7f0422c6df8 # v2
         if: ${{ contains(matrix.settings.target, 'musl') }}
@@ -122,10 +142,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           tool: cargo-zigbuild
-      - name: Setup toolchain
-        run: ${{ matrix.settings.setup }}
-        if: ${{ matrix.settings.setup }}
-        shell: bash
       - name: Install dependencies
         run: yarn install
       - name: Build
@@ -167,12 +183,15 @@ jobs:
           - '24'
     runs-on: ${{ matrix.settings.host }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
       - name: Setup node
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: ${{ matrix.node }}
-          cache: yarn
+          cache: ${{ github.event_name != 'push' && 'yarn' || '' }}
+          package-manager-cache: false
           architecture: ${{ matrix.settings.architecture }}
       - name: Install dependencies
         run: yarn install
@@ -206,12 +225,15 @@ jobs:
           - '24'
     runs-on: ${{ contains(matrix.target, 'aarch64') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
       - name: Setup node
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: ${{ matrix.node }}
-          cache: yarn
+          cache: ${{ github.event_name != 'push' && 'yarn' || '' }}
+          package-manager-cache: false
       - name: Output docker params
         id: docker
         run: |
@@ -223,14 +245,14 @@ jobs:
             } else {
               console.log('PLATFORM=linux/amd64')
             }
-          " >> $GITHUB_OUTPUT
+          " >> "$GITHUB_OUTPUT"
           node -e "
             if ('${{ matrix.target }}'.endsWith('-musl')) {
               console.log('IMAGE=node:${{ matrix.node }}-alpine')
             } else {
               console.log('IMAGE=node:${{ matrix.node }}-slim')
             }
-          " >> $GITHUB_OUTPUT
+          " >> "$GITHUB_OUTPUT"
       - name: Install dependencies
         run: |
           yarn config set --json supportedArchitectures.cpu '["current", "arm64", "x64", "arm"]'
@@ -252,28 +274,36 @@ jobs:
       - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
         if: ${{ contains(matrix.target, 'armv7') }}
       - name: Test bindings
-        uses: addnab/docker-run-action@4f65fabd2431ebc8d299f8e5a018d79a769ae185 # v3
-        with:
-          image: ${{ steps.docker.outputs.IMAGE }}
-          options: '-v ${{ github.workspace }}:${{ github.workspace }} -w ${{ github.workspace }} --platform ${{ steps.docker.outputs.PLATFORM }}'
-          run: yarn test
+        env:
+          DOCKER_IMAGE: ${{ steps.docker.outputs.IMAGE }}
+          DOCKER_PLATFORM: ${{ steps.docker.outputs.PLATFORM }}
+        run: |
+          docker run --rm \
+            --volume "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
+            --workdir "$GITHUB_WORKSPACE" \
+            --platform "$DOCKER_PLATFORM" \
+            --entrypoint sh "$DOCKER_IMAGE" -c 'yarn test'
   publish:
     name: Publish
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
     needs:
+      - zizmor
       - lint
       - test-macOS-windows-binding
       - test-linux-binding
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
       - name: Setup node
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24
-          cache: yarn
+          package-manager-cache: false
       - name: Install dependencies
         run: yarn install
       - name: create npm dirs
