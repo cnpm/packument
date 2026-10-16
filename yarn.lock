@@ -43,15 +43,12 @@ __metadata:
   dependencies:
     "@codspeed/tinybench-plugin": "npm:^6.0.0"
     "@e18e/eslint-plugin": "npm:^0.8.1"
-    "@emnapi/core": "npm:^1.5.0"
     "@emnapi/runtime": "npm:^1.5.0"
     "@napi-rs/cli": "npm:^3.2.0"
-    "@oxc-node/core": "npm:^0.1.0"
     "@taplo/cli": "npm:^0.7.0"
     "@ts-rs/wasm": "npm:0.15.0-ts7.1.0-dev.20260929"
-    "@tybys/wasm-util": "npm:^0.10.0"
     "@types/node": "npm:^24.10.1"
-    chalk: "npm:^6.0.0"
+    fallow: "npm:^3.33.1"
     npm-run-all2: "npm:^8.0.4"
     tinybench: "npm:^5.1.0"
     tsrs: "npm:0.15.0-ts7.1.0-dev.20260929"
@@ -128,6 +125,62 @@ __metadata:
   dependencies:
     tslib: "npm:^2.4.0"
   checksum: 10c0/e6d54bf2b1e64cdd83d2916411e44e579b6ae35d5def0dea61a3c452d9921373044dff32a8b8473ae60c80692bdc39323e98b96a3f3d87ba6886b24dd0ef7ca1
+  languageName: node
+  linkType: hard
+
+"@fallow-cli/darwin-arm64@npm:3.33.1":
+  version: 3.33.1
+  resolution: "@fallow-cli/darwin-arm64@npm:3.33.1"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@fallow-cli/darwin-x64@npm:3.33.1":
+  version: 3.33.1
+  resolution: "@fallow-cli/darwin-x64@npm:3.33.1"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@fallow-cli/linux-arm64-gnu@npm:3.33.1":
+  version: 3.33.1
+  resolution: "@fallow-cli/linux-arm64-gnu@npm:3.33.1"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@fallow-cli/linux-arm64-musl@npm:3.33.1":
+  version: 3.33.1
+  resolution: "@fallow-cli/linux-arm64-musl@npm:3.33.1"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@fallow-cli/linux-x64-gnu@npm:3.33.1":
+  version: 3.33.1
+  resolution: "@fallow-cli/linux-x64-gnu@npm:3.33.1"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@fallow-cli/linux-x64-musl@npm:3.33.1":
+  version: 3.33.1
+  resolution: "@fallow-cli/linux-x64-musl@npm:3.33.1"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@fallow-cli/win32-arm64-msvc@npm:3.33.1":
+  version: 3.33.1
+  resolution: "@fallow-cli/win32-arm64-msvc@npm:3.33.1"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@fallow-cli/win32-x64-msvc@npm:3.33.1":
+  version: 3.33.1
+  resolution: "@fallow-cli/win32-x64-msvc@npm:3.33.1"
+  conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
@@ -1159,176 +1212,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oxc-node/core-android-arm-eabi@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-android-arm-eabi@npm:0.1.7"
-  conditions: os=android & cpu=arm
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-android-arm64@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-android-arm64@npm:0.1.7"
-  conditions: os=android & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-darwin-arm64@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-darwin-arm64@npm:0.1.7"
-  conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-darwin-x64@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-darwin-x64@npm:0.1.7"
-  conditions: os=darwin & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-freebsd-x64@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-freebsd-x64@npm:0.1.7"
-  conditions: os=freebsd & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-linux-arm-gnueabihf@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-linux-arm-gnueabihf@npm:0.1.7"
-  conditions: os=linux & cpu=arm
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-linux-arm64-gnu@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-linux-arm64-gnu@npm:0.1.7"
-  conditions: os=linux & cpu=arm64 & libc=glibc
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-linux-arm64-musl@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-linux-arm64-musl@npm:0.1.7"
-  conditions: os=linux & cpu=arm64 & libc=musl
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-linux-ppc64-gnu@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-linux-ppc64-gnu@npm:0.1.7"
-  conditions: os=linux & cpu=ppc64 & libc=glibc
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-linux-s390x-gnu@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-linux-s390x-gnu@npm:0.1.7"
-  conditions: os=linux & cpu=s390x & libc=glibc
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-linux-x64-gnu@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-linux-x64-gnu@npm:0.1.7"
-  conditions: os=linux & cpu=x64 & libc=glibc
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-linux-x64-musl@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-linux-x64-musl@npm:0.1.7"
-  conditions: os=linux & cpu=x64 & libc=musl
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-openharmony-arm64@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-openharmony-arm64@npm:0.1.7"
-  conditions: os=openharmony & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-win32-arm64-msvc@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-win32-arm64-msvc@npm:0.1.7"
-  conditions: os=win32 & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-win32-ia32-msvc@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-win32-ia32-msvc@npm:0.1.7"
-  conditions: os=win32 & cpu=ia32
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core-win32-x64-msvc@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@oxc-node/core-win32-x64-msvc@npm:0.1.7"
-  conditions: os=win32 & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@oxc-node/core@npm:^0.1.0":
-  version: 0.1.7
-  resolution: "@oxc-node/core@npm:0.1.7"
-  dependencies:
-    "@oxc-node/core-android-arm-eabi": "npm:0.1.7"
-    "@oxc-node/core-android-arm64": "npm:0.1.7"
-    "@oxc-node/core-darwin-arm64": "npm:0.1.7"
-    "@oxc-node/core-darwin-x64": "npm:0.1.7"
-    "@oxc-node/core-freebsd-x64": "npm:0.1.7"
-    "@oxc-node/core-linux-arm-gnueabihf": "npm:0.1.7"
-    "@oxc-node/core-linux-arm64-gnu": "npm:0.1.7"
-    "@oxc-node/core-linux-arm64-musl": "npm:0.1.7"
-    "@oxc-node/core-linux-ppc64-gnu": "npm:0.1.7"
-    "@oxc-node/core-linux-s390x-gnu": "npm:0.1.7"
-    "@oxc-node/core-linux-x64-gnu": "npm:0.1.7"
-    "@oxc-node/core-linux-x64-musl": "npm:0.1.7"
-    "@oxc-node/core-openharmony-arm64": "npm:0.1.7"
-    "@oxc-node/core-win32-arm64-msvc": "npm:0.1.7"
-    "@oxc-node/core-win32-ia32-msvc": "npm:0.1.7"
-    "@oxc-node/core-win32-x64-msvc": "npm:0.1.7"
-    pirates: "npm:^4.0.7"
-  dependenciesMeta:
-    "@oxc-node/core-android-arm-eabi":
-      optional: true
-    "@oxc-node/core-android-arm64":
-      optional: true
-    "@oxc-node/core-darwin-arm64":
-      optional: true
-    "@oxc-node/core-darwin-x64":
-      optional: true
-    "@oxc-node/core-freebsd-x64":
-      optional: true
-    "@oxc-node/core-linux-arm-gnueabihf":
-      optional: true
-    "@oxc-node/core-linux-arm64-gnu":
-      optional: true
-    "@oxc-node/core-linux-arm64-musl":
-      optional: true
-    "@oxc-node/core-linux-ppc64-gnu":
-      optional: true
-    "@oxc-node/core-linux-s390x-gnu":
-      optional: true
-    "@oxc-node/core-linux-x64-gnu":
-      optional: true
-    "@oxc-node/core-linux-x64-musl":
-      optional: true
-    "@oxc-node/core-openharmony-arm64":
-      optional: true
-    "@oxc-node/core-win32-arm64-msvc":
-      optional: true
-    "@oxc-node/core-win32-ia32-msvc":
-      optional: true
-    "@oxc-node/core-win32-x64-msvc":
-      optional: true
-  checksum: 10c0/500ea1420e6e1d6fe088581ff890ab2ab1ffc046e8fec2bd0188c8bd4858c4e5d83e270533b21a6f2bbb85b875efe4ce8aa75d8ddecb44905f4af1b43b201dbf
-  languageName: node
-  linkType: hard
-
 "@oxc-project/runtime@npm:=0.154.0":
   version: 0.154.0
   resolution: "@oxc-project/runtime@npm:0.154.0"
@@ -2344,13 +2227,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^6.0.0":
-  version: 6.0.1
-  resolution: "chalk@npm:6.0.1"
-  checksum: 10c0/4c58238fa874f531b5201bf99ebd374742be31f8e306c7783d930856aec305f2dea3e07531a8805b2a7ba92807296e39ced52e9f673703e0264d96e83998a429
-  languageName: node
-  linkType: hard
-
 "chardet@npm:^2.1.0":
   version: 2.1.0
   resolution: "chardet@npm:2.1.0"
@@ -2471,7 +2347,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"detect-libc@npm:^2.0.3":
+"detect-libc@npm:2.1.2, detect-libc@npm:^2.0.3":
   version: 2.1.2
   resolution: "detect-libc@npm:2.1.2"
   checksum: 10c0/acc675c29a5649fa1fb6e255f993b8ee829e510b6b56b0910666949c80c364738833417d0edb5f90e4e46be17228b0f2b66a010513984e18b15deeeac49369c4
@@ -2633,6 +2509,58 @@ __metadata:
   version: 3.1.3
   resolution: "exponential-backoff@npm:3.1.3"
   checksum: 10c0/77e3ae682b7b1f4972f563c6dbcd2b0d54ac679e62d5d32f3e5085feba20483cf28bd505543f520e287a56d4d55a28d7874299941faf637e779a1aa5994d1267
+  languageName: node
+  linkType: hard
+
+"fallow-type-aware@npm:3.33.1":
+  version: 3.33.1
+  resolution: "fallow-type-aware@npm:3.33.1"
+  dependencies:
+    typescript: "npm:7.0.2"
+  bin:
+    fallow-type-aware: fallow-type-aware.mjs
+  checksum: 10c0/5d4964e1729bd8e7643da0767b79b4bdde00563e80721e45da684884c5b393a045908400ba3ec7465f3896b84d1eaf65ad6da460a73e77a2eb805e0887fc3adb
+  languageName: node
+  linkType: hard
+
+"fallow@npm:^3.33.1":
+  version: 3.33.1
+  resolution: "fallow@npm:3.33.1"
+  dependencies:
+    "@fallow-cli/darwin-arm64": "npm:3.33.1"
+    "@fallow-cli/darwin-x64": "npm:3.33.1"
+    "@fallow-cli/linux-arm64-gnu": "npm:3.33.1"
+    "@fallow-cli/linux-arm64-musl": "npm:3.33.1"
+    "@fallow-cli/linux-x64-gnu": "npm:3.33.1"
+    "@fallow-cli/linux-x64-musl": "npm:3.33.1"
+    "@fallow-cli/win32-arm64-msvc": "npm:3.33.1"
+    "@fallow-cli/win32-x64-msvc": "npm:3.33.1"
+    detect-libc: "npm:2.1.2"
+    fallow-type-aware: "npm:3.33.1"
+  dependenciesMeta:
+    "@fallow-cli/darwin-arm64":
+      optional: true
+    "@fallow-cli/darwin-x64":
+      optional: true
+    "@fallow-cli/linux-arm64-gnu":
+      optional: true
+    "@fallow-cli/linux-arm64-musl":
+      optional: true
+    "@fallow-cli/linux-x64-gnu":
+      optional: true
+    "@fallow-cli/linux-x64-musl":
+      optional: true
+    "@fallow-cli/win32-arm64-msvc":
+      optional: true
+    "@fallow-cli/win32-x64-msvc":
+      optional: true
+    fallow-type-aware:
+      optional: true
+  bin:
+    fallow: bin/fallow
+    fallow-lsp: bin/fallow-lsp
+    fallow-mcp: bin/fallow-mcp
+  checksum: 10c0/2fbecdfc2306fe0406ec243691ea631c3c00cb29431d70d17b89637beec24b8854591345c1c1fed6126ac8f9fd7aa2a81625a538528167cd68f560475be4edd4
   languageName: node
   linkType: hard
 
@@ -3642,13 +3570,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pirates@npm:^4.0.7":
-  version: 4.0.7
-  resolution: "pirates@npm:4.0.7"
-  checksum: 10c0/a51f108dd811beb779d58a76864bbd49e239fa40c7984cd11596c75a121a8cc789f1c8971d8bb15f0dbf9d48b76c05bb62fcbce840f89b688c0fa64b37e8478a
-  languageName: node
-  linkType: hard
-
 "pngjs@npm:^7.0.0":
   version: 7.0.0
   resolution: "pngjs@npm:7.0.0"
@@ -4012,7 +3933,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^7.0.2":
+"typescript@npm:7.0.2, typescript@npm:^7.0.2":
   version: 7.0.2
   resolution: "typescript@npm:7.0.2"
   dependencies:
@@ -4083,7 +4004,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^7.0.2#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A7.0.2#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^7.0.2#optional!builtin<compat/typescript>":
   version: 7.0.2
   resolution: "typescript@patch:typescript@npm%3A7.0.2#optional!builtin<compat/typescript>::version=7.0.2&hash=3bafbf"
   dependencies:

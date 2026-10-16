@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/fallow/schema.json",
+  "entry": ["js/index.ts", "benchmark/get_description.ts", "benchmark/real_case_worker.ts"],
+  // NAPI-RS generates these bindings and platform-specific imports.
+  "ignorePatterns": ["index.js", "index.d.ts", "wasi-worker-browser.mjs"],
+  "ignoreDependencies": [
+    // Vite+ loads this plugin by name from lint.jsPlugins in vite.config.ts.
+    "@e18e/eslint-plugin",
+    // Required as a peer dependency by @napi-rs/cli.
+    "@emnapi/runtime",
+    // scripts/tsrs.js selects and imports the compiler dynamically for each platform.
+    "@ts-rs/wasm",
+    "tsrs",
+  ],
+}
