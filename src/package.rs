@@ -3,8 +3,8 @@ use std::collections::{HashMap, HashSet};
 
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
-use sonic_rs::{from_slice, from_str, to_array_iter};
-use sonic_rs::{to_object_iter, JsonValueTrait, LazyValue};
+use sonic_rs::{from_slice, from_str};
+use sonic_rs::{JsonValueTrait, LazyValue};
 
 use crate::json;
 use crate::view;
@@ -62,7 +62,7 @@ impl<'a> Package<'a> {
     pub fn diff(&self, exists_versions: Vec<String>) -> Result<DiffResult> {
         let mut added_versions = Vec::new();
         let mut removed_versions = Vec::new();
-        let Some(versions) = self.root.get("versions") else {
+        let Some(versions) = self.versions_value() else {
             return Ok(DiffResult {
                 added_versions,
                 removed_versions,
@@ -74,7 +74,7 @@ impl<'a> Package<'a> {
             .map(|s| s.as_str())
             .collect::<HashSet<_>>();
         let mut all_versions = HashMap::new();
-        for (key, value) in to_object_iter(versions.as_raw_str()).flatten() {
+        for (key, value) in versions.into_object_iter().into_iter().flatten().flatten() {
             all_versions.insert(key, self.position(&value));
         }
 
@@ -155,7 +155,10 @@ impl<'a> Package<'a> {
                 None
             } else {
                 Some(
-                    to_array_iter(maintainers.as_raw_str())
+                    maintainers
+                        .into_array_iter()
+                        .into_iter()
+                        .flatten()
                         .flatten()
                         .filter_map(|value| from_str(value.as_raw_str()).ok())
                         .collect(),
@@ -169,7 +172,7 @@ impl<'a> Package<'a> {
         let Some(time) = self.root.get("time") else {
             return false;
         };
-        for (key, value) in to_object_iter(time.as_raw_str()).flatten() {
+        for (key, value) in time.into_object_iter().into_iter().flatten().flatten() {
             // {"unpublished": "2022-01-14T12:34:23.941Z"}
             // {"unpublished": {"time": "2022-01-14T12:34:23.941Z", "versions": ["0.0.1"]}}
             if key == "unpublished" && (value.is_str() || value.is_object()) {
@@ -182,10 +185,10 @@ impl<'a> Package<'a> {
     #[napi(getter)]
     pub fn versions(&self) -> Result<HashMap<String, Version>> {
         let mut out = HashMap::default();
-        let Some(versions) = self.root.get("versions") else {
+        let Some(versions) = self.versions_value() else {
             return Ok(out);
         };
-        for (key, value) in to_object_iter(versions.as_raw_str()).flatten() {
+        for (key, value) in versions.into_object_iter().into_iter().flatten().flatten() {
             let version: Version = from_str(value.as_raw_str())
                 .map_err(|e| Error::new(Status::InvalidArg, e.to_string()))?;
             out.insert(key.to_string(), version);
@@ -197,7 +200,7 @@ impl<'a> Package<'a> {
     pub fn get_latest_version(&self) -> Option<Version> {
         let tags = self.root.get("dist-tags")?;
         let mut latest_version = None;
-        for (key, value) in to_object_iter(tags.as_raw_str()).flatten() {
+        for (key, value) in tags.into_object_iter()?.flatten() {
             if key == "latest" {
                 if let Some(version) = value.as_str() {
                     latest_version = Some(version.to_string());
@@ -207,8 +210,8 @@ impl<'a> Package<'a> {
         }
         let latest_version = latest_version?;
 
-        let versions = self.root.get("versions")?;
-        for (key, value) in to_object_iter(versions.as_raw_str()).flatten() {
+        let versions = self.versions_value()?;
+        for (key, value) in versions.into_object_iter()?.flatten() {
             if key == latest_version {
                 if let Ok(version) = from_str(value.as_raw_str()) {
                     return Some(version);
@@ -247,16 +250,25 @@ impl<'a> Package<'a> {
     ///
     /// Extracts `name`, `description`, `readme`, `repository`, `maintainers`,
     /// `dist-tags`, `time`, `isUnpublished`, and version keys in one traversal.
-    /// Much faster than accessing each field individually (~2x).
+    /// Avoids separate top-level lookups for each field.
     #[napi]
     pub fn get_meta_info(&self) -> Result<view::MetaInfo> {
         view::parse_meta_info(self.root.as_raw_str())
     }
 
+    fn versions_value(&self) -> Option<LazyValue<'a>> {
+        // The constructor already validated the document. Iterating its lazy
+        // values reuses that validation; get("versions") validates the entire
+        // versions object again before returning it.
+        self.root
+            .clone()
+            .into_object_iter()?
+            .flatten()
+            .find_map(|(key, value)| (key == "versions").then_some(value))
+    }
+
     fn position(&self, value: &LazyValue) -> (u32, u32) {
-        let offset =
-            value.as_raw_str().as_ptr() as usize - self.root.as_raw_str().as_ptr() as usize;
-        (offset as u32, (offset + value.as_raw_str().len()) as u32)
+        json::get_value_position(self.root.as_raw_str().as_bytes(), value)
     }
 
     fn get_record_by_key(&self, key: &str) -> Option<HashMap<String, String>> {
@@ -265,7 +277,10 @@ impl<'a> Package<'a> {
                 None
             } else {
                 Some(
-                    to_object_iter(value.as_raw_str())
+                    value
+                        .into_object_iter()
+                        .into_iter()
+                        .flatten()
                         .flatten()
                         .filter_map(|(key, value)| {
                             value.as_str().map(|s| (key.to_string(), s.to_string()))

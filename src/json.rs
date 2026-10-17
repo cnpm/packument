@@ -1,6 +1,6 @@
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
-use sonic_rs::{get, to_object_iter, JsonValueTrait, LazyValue, PointerNode};
+use sonic_rs::{get, JsonValueTrait, LazyValue, PointerNode};
 
 #[derive(Debug)]
 #[napi(string_enum)]
@@ -85,7 +85,10 @@ pub fn detect_set_property_position(
             // the start position of the new property is the `end position - 1` of the parent ("}" character)
             let start = parent_end - 1;
             // try to find the last property of the parent
-            let previous = to_object_iter(value.as_raw_str())
+            let previous = value
+                .into_object_iter()
+                .into_iter()
+                .flatten()
                 .flatten()
                 .last()
                 .map(|(key, _)| key.to_string());
@@ -168,7 +171,8 @@ pub fn detect_delete_property_position(
     //  start
     let mut start = get_value_position(data, &parent).0 + 1;
 
-    for (key, value) in to_object_iter(parent.as_raw_str()).flatten() {
+    // Reuse the parent validation performed by get().
+    for (key, value) in parent.into_object_iter().into_iter().flatten().flatten() {
         let (_, end) = get_value_position(data, &value);
 
         if key == delete_property.as_str() {
@@ -273,7 +277,9 @@ pub fn get_in(data: &[u8], paths: Vec<String>) -> Result<Option<GetInResult>> {
     }
 }
 
-fn get_value_position(data: &[u8], value: &LazyValue) -> (u32, u32) {
-    let offset = value.as_raw_str().as_ptr() as usize - data.as_ptr() as usize;
-    (offset as u32, (offset + value.as_raw_str().len()) as u32)
+pub(crate) fn get_value_position(data: &[u8], value: &LazyValue) -> (u32, u32) {
+    // Lazy iterators can include trailing whitespace when skipping numbers.
+    let raw = value.as_raw_str().trim_end_matches([' ', '\t', '\r', '\n']);
+    let offset = raw.as_ptr() as usize - data.as_ptr() as usize;
+    (offset as u32, (offset + raw.len()) as u32)
 }

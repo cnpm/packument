@@ -365,3 +365,18 @@ test('should delete large json', () => {
   builder.deleteIn(['versions'])
   expect(JSON.parse(builder.build().toString()).versions).toBeUndefined()
 })
+
+test('should preserve numeric whitespace when deleting properties', () => {
+  for (const number of ['-1', '1.5', '1e+10', '1e-10']) {
+    const data = Buffer.from(`{"before":${number} \r\n\t,"middle":2 \t,"after":3}`)
+    expect(new JSONBuilder(data).deleteIn(['middle']).build().toString()).toBe(`{"before":${number} \t,"after":3}`)
+    expect(new JSONBuilder(data).deleteIn(['before']).build().toString()).toBe('{"middle":2 \t,"after":3}')
+  }
+})
+
+test('should validate parent contents before adding or deleting properties', () => {
+  for (const raw of ['{"versions":{"bad":tru}}', '{"versions":{"first":{},"bad":"\\q"}}']) {
+    expect(() => new JSONBuilder(Buffer.from(raw)).setIn(['versions', 'new'], {})).toThrow()
+    expect(() => new JSONBuilder(Buffer.from(raw)).deleteIn(['versions', 'first'])).toThrow()
+  }
+})
