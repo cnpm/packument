@@ -51,7 +51,7 @@
     "access": "public"
   },
   "scripts": {
-    "ready": "vp run build && vp check && vp test",
+    "ready": "vp run build && vp check && vp run fallow && vp test",
     "artifacts": "napi artifacts",
     "prebench": "vp run build",
     "bench": "node benchmark/bench.ts && node benchmark/bench_real_case.ts && node benchmark/bench_memory.ts && vp run bench:gc",
@@ -72,20 +72,18 @@
     "prepare": "vp config --no-agent",
     "check": "vp check",
     "format:js": "vp fmt .",
-    "test:consumer": "node scripts/test-consumer.mjs"
+    "test:consumer": "node scripts/test-consumer.mjs",
+    "fallow": "fallow dead-code --fail-on-issues"
   },
   "devDependencies": {
     "@codspeed/tinybench-plugin": "^6.0.0",
     "@e18e/eslint-plugin": "^0.8.1",
-    "@emnapi/core": "^1.5.0",
     "@emnapi/runtime": "^1.5.0",
     "@napi-rs/cli": "^3.2.0",
-    "@oxc-node/core": "^0.1.0",
     "@taplo/cli": "^0.7.0",
     "@ts-rs/wasm": "0.15.0-ts7.1.0-dev.20260929",
-    "@tybys/wasm-util": "^0.10.0",
     "@types/node": "^24.10.1",
-    "chalk": "^6.0.0",
+    "fallow": "^3.33.1",
     "npm-run-all2": "^8.0.4",
     "tinybench": "^5.1.0",
     "tsrs": "0.15.0-ts7.1.0-dev.20260929",
