@@ -50,7 +50,7 @@ __metadata:
     "@types/node": "npm:^24.10.1"
     fallow: "npm:^3.33.1"
     npm-run-all2: "npm:^8.0.4"
-    tinybench: "npm:^5.1.0"
+    tinybench: "npm:^6.0.0"
     tsrs: "npm:0.15.0-ts7.1.0-dev.20260929"
     typescript: "npm:^7.0.2"
     vite: "catalog:"
@@ -3824,14 +3824,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinybench@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "tinybench@npm:5.1.0"
-  checksum: 10c0/a9d53204888711c6e67d374b96b9a8a096aac80dda755562de3ed7afa2a39f04abd3cd2a64e401a3f0ece4d49ae20230be0986c733030756bde2f0d56e78cd0f
-  languageName: node
-  linkType: hard
-
-"tinybench@npm:^6.2.2":
+"tinybench@npm:^6.0.0, tinybench@npm:^6.2.2":
   version: 6.2.2
   resolution: "tinybench@npm:6.2.2"
   checksum: 10c0/f0e6391f4ca86875ce5a64510696323aa841c10495fdd1c6ca530457c7e77f2b3aa82d9d6f1553126420062b1008607257677ce2b25ff1948732a79d7a56514a

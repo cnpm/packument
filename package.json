@@ -85,7 +85,7 @@
     "@types/node": "^24.10.1",
     "fallow": "^3.33.1",
     "npm-run-all2": "^8.0.4",
-    "tinybench": "^5.1.0",
+    "tinybench": "^6.0.0",
     "tsrs": "0.15.0-ts7.1.0-dev.20260929",
     "typescript": "^7.0.2",
     "vite": "catalog:",
