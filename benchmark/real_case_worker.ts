@@ -20,6 +20,7 @@ function jsonParseAllFields(buf: Buffer) {
   // @ts-expect-error - JSON.parse can work with Buffer
   const pkg = JSON.parse(buf)
   return {
+    name: pkg.name,
     readme: pkg.readme,
     time: pkg.time,
     maintainers: pkg.maintainers,
@@ -34,6 +35,7 @@ function jsonParseAllFields(buf: Buffer) {
 function sonicMultiGet(buf: Buffer) {
   const pkg = new Package(buf)
   return {
+    name: pkg.name,
     readme: pkg.readme,
     time: pkg.time,
     maintainers: pkg.maintainers,
@@ -41,7 +43,7 @@ function sonicMultiGet(buf: Buffer) {
     distTags: pkg.distTags,
     description: pkg.description,
     repository: pkg.repository,
-    latestVersion: pkg.getLatestVersion(),
+    versionKeys: pkg.diff([]).addedVersions.map(([version]) => version),
   }
 }
 

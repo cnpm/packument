@@ -4,13 +4,17 @@
  * In cnpmcore's PackageSyncerService, a single sync operation reads
  * multiple top-level fields from the packument sequentially:
  *   .readme, .time, .maintainers, .isUnpublished, .distTags,
- *   .description, .repository, .getLatestVersion()
+ *   .description, .repository, and version keys for synchronization.
+ *
+ * Each method returns the same metadata fields and version keys.
+ * Latest-version manifests are measured separately in bench_hot_paths.ts.
  *
  * This benchmark compares:
  *   1. JSON.parse           — single parse, multiple field reads
- *   2. sonic-rs multi-get   — multiple lazy traversals (current)
- *   3. sonic-rs getMetaInfo — single-pass serde view (new)
+ *   2. sonic-rs multi-get   — individual getters + diff for version keys
+ *   3. sonic-rs getMetaInfo — single-pass serde view
  */
+import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -41,14 +45,15 @@ function jsonParseAllFields(data: Buffer) {
     isUnpublished = typeof time.unpublished === 'string' || typeof time.unpublished === 'object'
   }
   const versionKeys = pkg.versions ? Object.keys(pkg.versions) : []
-  return { readme, time, maintainers, isUnpublished, distTags, description, repository, versionKeys }
+  return { name: pkg.name, readme, time, maintainers, isUnpublished, distTags, description, repository, versionKeys }
 }
 
-// --- 2. sonic-rs multi-get (current) ---
+// --- 2. sonic-rs multi-get ---
 
 function sonicMultiGet(data: Buffer) {
   const pkg = new Package(data)
   return {
+    name: pkg.name,
     readme: pkg.readme,
     time: pkg.time,
     maintainers: pkg.maintainers,
@@ -56,7 +61,7 @@ function sonicMultiGet(data: Buffer) {
     distTags: pkg.distTags,
     description: pkg.description,
     repository: pkg.repository,
-    latestVersion: pkg.getLatestVersion(),
+    versionKeys: pkg.diff([]).addedVersions.map(([version]) => version),
   }
 }
 
@@ -69,22 +74,27 @@ function sonicView(data: Buffer) {
 // --- Verify ---
 function verify(data: Buffer, label: string) {
   const a = jsonParseAllFields(data)
-  const c = sonicView(data)
-  const checks = [
-    ['readme', !!a.readme, !!c.readme],
-    ['description', a.description, c.description],
-    ['isUnpublished', a.isUnpublished, c.isUnpublished],
-    ['versionKeys', a.versionKeys.length, c.versionKeys.length],
-    ['time keys', a.time ? Object.keys(a.time).length : 0, c.time ? Object.keys(c.time).length : 0],
-  ] as const
-  for (const [field, va, vc] of checks) {
-    if (String(va) !== String(vc)) console.warn(`[${label}] mismatch ${field}: JSON.parse=${va}, view=${vc}`)
+  for (const actual of [sonicMultiGet(data), sonicView(data)]) {
+    for (const field of [
+      'name',
+      'readme',
+      'description',
+      'maintainers',
+      'repository',
+      'time',
+      'distTags',
+      'isUnpublished',
+    ] as const) {
+      assert.deepEqual(actual[field] ?? null, a[field] ?? null, `[${label}] ${field}`)
+    }
+    assert.deepEqual(actual.versionKeys.toSorted(), a.versionKeys.toSorted(), `[${label}] versionKeys`)
   }
   console.log(`[${label}] verify OK (versions=${a.versionKeys.length})`)
 }
 
 verify(smallData, 'small')
 verify(largeData, 'large')
+verify(superLargeData, 'super large')
 
 const b = withCodSpeed(new Bench())
 

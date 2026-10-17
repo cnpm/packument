@@ -77,7 +77,7 @@ export declare class Package {
    *
    * Extracts `name`, `description`, `readme`, `repository`, `maintainers`,
    * `dist-tags`, `time`, `isUnpublished`, and version keys in one traversal.
-   * Much faster than accessing each field individually (~2x).
+   * Avoids separate top-level lookups for each field.
    */
   getMetaInfo(): MetaInfo
 }

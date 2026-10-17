@@ -200,3 +200,57 @@ test('should handle missing _npmUser field', () => {
   const version = pkgWithoutNpmUser.getIn<any>(['versions', '1.0.0'])
   expect(version._npmUser).toBeUndefined()
 })
+
+test('should preserve escaped version keys and byte positions', () => {
+  const data = Buffer.from(
+    String.raw`{"before":{"text":"雪 } ] \\\""},"ver\u0073ions":{"1.0.0\u002d雪":{"name":"雪","version":"1.0.0-雪"},"2.0.0":{"version":"2.0.0"}},"dist-tags":{"latest":"1.0.0-雪"}}`,
+  )
+  const pkg = new Package(data)
+  expect(pkg.getLatestVersion()).toEqual({ name: '雪', version: '1.0.0-雪' })
+  expect(Object.keys(pkg.versions).sort()).toEqual(['1.0.0-雪', '2.0.0'])
+  const diff = pkg.diff(['2.0.0', 'missing', 'missing'])
+  expect(diff.removedVersions).toEqual(['missing'])
+  expect(diff.addedVersions).toHaveLength(1)
+  const [key, [start, end]] = diff.addedVersions[0]
+  expect(key).toBe('1.0.0-雪')
+  expect(data.subarray(start, end).toString()).toBe('{"name":"雪","version":"1.0.0-雪"}')
+})
+
+test('should preserve duplicate key behavior when scanning versions', () => {
+  const data = Buffer.from(
+    '{"versions":{"1.0.0":null,"1.0.0":{"version":"first"},"1.0.0":{"version":"last"}},"versions":{"2.0.0":{}},"dist-tags":{"latest":false,"latest":"1.0.0"}}',
+  )
+  const pkg = new Package(data)
+  expect(pkg.getLatestVersion()).toEqual({ version: 'first' })
+  const diff = pkg.diff([])
+  expect(diff.addedVersions).toHaveLength(1)
+  const [key, [start, end]] = diff.addedVersions[0]
+  expect(key).toBe('1.0.0')
+  expect(data.subarray(start, end).toString()).toBe('{"version":"last"}')
+  expect(() => pkg.versions).toThrow()
+})
+
+test.each([null, [], 42, 'versions'])('should handle a non-object versions value: %j', (versions) => {
+  const pkg = new Package(Buffer.from(JSON.stringify({ versions, 'dist-tags': { latest: '1.0.0' } })))
+  expect(pkg.versions).toEqual({})
+  expect(pkg.getLatestVersion()).toBeNull()
+  expect(pkg.diff(['1.0.0'])).toEqual({ addedVersions: [], removedVersions: ['1.0.0'] })
+})
+
+test('should exclude whitespace from primitive version positions', () => {
+  const data = Buffer.from('{"versions":{"number":1.5e+10 \r\n\t,"null":null ,"boolean":false }}')
+  const pkg = new Package(data)
+  const values = Object.fromEntries(
+    pkg.diff([]).addedVersions.map(([key, [start, end]]) => [key, data.subarray(start, end).toString()]),
+  )
+  expect(values).toEqual({ number: '1.5e+10', null: 'null', boolean: 'false' })
+})
+
+test.each([
+  '{"versions":{"unused":{"bad":tru}},"dist-tags":{"latest":"missing"}}',
+  '{"versions":{"unused":{"bad":"\\q"}}}',
+  '{"versions":{"unused":{"bad":01}}}',
+  '{"versions":{}} trailing',
+])('should still reject invalid JSON before accessing versions: %s', (raw) => {
+  expect(() => new Package(Buffer.from(raw))).toThrow()
+})

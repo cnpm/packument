@@ -63,7 +63,7 @@ console.log(versions)
 
 ### Single-Pass Metadata Extraction (`getMetaInfo`)
 
-When you need multiple top-level fields at once, `getMetaInfo()` extracts them all in a single pass through the JSON document. This is **~2x faster** than reading each field individually, because it avoids re-traversing the JSON for every field access.
+When you need multiple top-level fields at once, `getMetaInfo()` extracts them all in a single pass through the JSON document. It avoids a separate top-level lookup for each field. The performance benefit depends on the fields and document size.
 
 ```javascript
 import { Package } from '@cnpmjs/packument'
@@ -187,6 +187,15 @@ Supported value types for `setIn`:
 
 ```bash
 npm run bench
+```
+
+To measure version lookups, diffs, and mutations separately, run `vp run build && vp run bench:hot`.
+The benchmark includes construction in cold cases and reuses a `Package` in warm cases.
+It verifies results before timing and can save measurements as JSON:
+
+```bash
+node benchmark/bench_hot_paths.ts current.json
+NAPI_RS_NATIVE_LIBRARY_PATH=/absolute/path/baseline.node node benchmark/bench_hot_paths.ts baseline.json
 ```
 
 ### Node.js v24.11.1 Result
