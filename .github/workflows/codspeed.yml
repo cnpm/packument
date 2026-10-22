@@ -51,7 +51,7 @@ jobs:
         run: vp run build --target x86_64-unknown-linux-gnu --use-napi-cross
 
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@821a40cd6c80e3cfe387caf55668287addd808da # v5
+        uses: CodSpeedHQ/action@78102a468f96d8e0ccb92d0ec49425753fc42062 # v5
         with:
           mode: simulation
           run: node benchmark/bench_hot_paths.ts && node benchmark/bench.ts && node benchmark/bench_real_case.ts
