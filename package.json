@@ -83,7 +83,7 @@
     "@napi-rs/cli": "^3.2.0",
     "@taplo/cli": "^0.7.0",
     "@ts-rs/wasm": "0.15.0-ts7.1.0-dev.20260929",
-    "@types/node": "^24.10.1",
+    "@types/node": "^26.0.0",
     "fallow": "^3.33.1",
     "npm-run-all2": "^9.0.0",
     "tinybench": "^6.0.0",
