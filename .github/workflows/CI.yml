@@ -65,7 +65,7 @@ jobs:
       - name: Clippy
         run: cargo clippy
       - name: Install cargo-binstall
-        uses: cargo-bins/cargo-binstall@e93a9f89058afc12903de4d5c3696de365b7fe36 # main
+        uses: cargo-bins/cargo-binstall@b0ba29dbf234bdaba340dd6c57c96c560756b5e3 # main
       - name: Install cargo-shear
         run: cargo binstall --no-confirm cargo-shear
       - name: Check for unused dependencies
