@@ -11,6 +11,12 @@
     {
       "groupName": "linter",
       "matchPackageNames": ["/^eslint/", "/^@typescript-eslint/"]
+    },
+    {
+      "matchPackageNames": ["vite-plus", "@voidzero-dev/vite-plus-core"],
+      "groupName": "vite-plus",
+      "groupSlug": "vite-plus",
+      "separateMajorMinor": false
     }
   ],
   "commitMessagePrefix": "chore: ",
