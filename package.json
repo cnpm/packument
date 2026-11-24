@@ -94,6 +94,6 @@
   },
   "packageManager": "yarn@4.19.0",
   "resolutions": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@8.3.8000"
+    "vite": "npm:@voidzero-dev/vite-plus-core@8.3.8001"
   }
 }
